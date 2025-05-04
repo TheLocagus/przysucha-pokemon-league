@@ -118,6 +118,6 @@
 	}
 
 	tbody tr td {
-		padding: 20px 0;
+		padding: 20px 1px;
 	}
 </style>
