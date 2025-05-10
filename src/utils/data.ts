@@ -20,6 +20,45 @@ export interface PlayerStats {
 	detailsResults: Record<Players, Details>;
 }
 
+export interface TournamentDetails {
+	playerId: string;
+	wins: number;
+	loses: number;
+	draws: number;
+	prizeCardsGained: number;
+	prizeCardsLost: number;
+	results: TournamentsDetailsResults[];
+}
+
+export interface TournamentDTO {
+	_id: string;
+	tournamentCount: number;
+	details: TournamentDetails[];
+}
+
+export interface TournamentsDetailsResults {
+	opponentId: string;
+	result: string;
+	prizeCardsGained: number;
+	prizeCardsLost: number;
+}
+
+export interface TournamentsDetailsDTO {
+	tournamentId: string;
+	results: TournamentsDetailsResults[];
+}
+
+export interface PlayersDTO {
+	_id: string;
+	name: string;
+	wins: number;
+	loses: number;
+	draws: number;
+	prizeCardsGained: number;
+	prizeCardsLost: number;
+	tournamentsDetails: TournamentsDetailsDTO[];
+}
+
 export const database: Record<string, TournamentStats> = {
 	first: {
 		Patryk: {

@@ -1,38 +1,30 @@
 <script lang="ts">
-	import type { DeckTypes, Players, TournamentStats } from '../utils/data';
+	import type {
+		DeckTypes,
+		Players,
+		PlayersDTO,
+		TournamentDetails,
+		TournamentDTO,
+		TournamentStats
+	} from '../utils/data';
 
 	let {
-		tournamentData,
+		tableData,
 		tableView
 	}: {
-		tournamentData: TournamentStats;
-		tableView: string;
+		tableData: TableData[];
+		tableView: number;
 	} = $props();
 
 	interface TableData {
-		player: keyof TournamentStats;
-		wins: number | undefined;
-		loses: number | undefined;
-		draws: number | undefined;
-		pokemonsDefeated: number | undefined;
-		pokemonsLost: number | undefined;
-		deckType: DeckTypes[] | undefined;
+		player: string;
+		wins: number;
+		loses: number;
+		draws: number;
+		prizeCardsGained: number;
+		prizeCardsLost: number;
 	}
-
-	const tableData: TableData[] = $derived(
-		Object.entries(tournamentData).map(([user, stats]) => {
-			const player = user as Players;
-			return {
-				player,
-				wins: stats?.wins,
-				loses: stats?.loses,
-				draws: stats?.draws,
-				pokemonsDefeated: stats?.pokemonsDefeated,
-				pokemonsLost: stats?.pokemonsLost,
-				deckType: stats?.deckType
-			};
-		})
-	);
+	console.log(tableData);
 
 	const columns = [
 		{
@@ -48,11 +40,11 @@
 			label: 'Porażki'
 		},
 		{
-			id: 'pokemonsDefeated',
+			id: 'prizeCardsGained',
 			label: 'Pokonane pokemony'
 		},
 		{
-			id: 'pokemonsLost',
+			id: 'prizeCardsLost',
 			label: 'Stracone pokemony'
 		}
 	];
@@ -63,12 +55,12 @@
 	};
 
 	const sortedTableData = $derived.by(() => {
-		if (tableView === 'first') {
-			return tableData.toSorted((a, b) => (b?.pokemonsDefeated ?? 0) - (a?.pokemonsDefeated ?? 0));
+		if (tableView === 1) {
+			return tableData.toSorted((a, b) => (b?.prizeCardsGained ?? 0) - (a?.prizeCardsGained ?? 0));
 		} else {
 			return tableData.toSorted((a, b) => {
 				if ((b?.wins ?? 0) - (a?.wins ?? 0) === 0) {
-					return (b?.pokemonsDefeated ?? 0) - (a?.pokemonsDefeated ?? 0);
+					return (b?.prizeCardsGained ?? 0) - (a?.prizeCardsGained ?? 0);
 				}
 				return (b?.wins ?? 0) - (a?.wins ?? 0);
 			});

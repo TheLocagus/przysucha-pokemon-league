@@ -1,4 +1,7 @@
 node_modules
+mongo
+.env
+*.json
 
 # Output
 .output

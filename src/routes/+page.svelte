@@ -1,75 +1,68 @@
 <script lang="ts">
 	import TournamentTable from '../components/TournamentTable.svelte';
-	import type { Players, PlayerStats, TournamentStats } from '../utils/data';
+	import type {
+		Players,
+		PlayersDTO,
+		PlayerStats,
+		TournamentDTO,
+		TournamentStats
+	} from '../utils/data';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 
-	const database = data.database;
-	let tableView = $state('first');
+	interface TableData {
+		player: string;
+		wins: number;
+		loses: number;
+		draws: number;
+		prizeCardsGained: number;
+		prizeCardsLost: number;
+	}
 
-	const changeTableView = (view: string) => {
+	const tournaments: TournamentDTO[] = data.tournaments;
+	const players: PlayersDTO[] = data.players;
+	let tableView = $state(1);
+
+	$inspect(tournaments);
+
+	const changeTableView = (view: number) => {
 		console.log(view);
 		tableView = view;
 	};
 
-	const tournamentData = $derived.by(() => {
-		if (tableView === 'all') {
-			const players: Players[] = Object.keys(database.first) as Players[];
-
-			const defaultPlayersStats: TournamentStats = Object.fromEntries(
-				players.map<[Players, PlayerStats]>((player) => [
-					player,
-					{
-						wins: 0,
-						loses: 0,
-						draws: 0,
-						pokemonsDefeated: 0,
-						pokemonsLost: 0,
-						deckType: [],
-						detailsResults: undefined
-					}
-				])
-			) as TournamentStats;
-
-			const result = Object.values(database).reduce((acc, curr) => {
-				console.log({ acc });
-				return Object.fromEntries(
-					players.map((player) => [
-						player,
-						{
-							wins: (acc[player]?.wins ?? 0) + (curr[player]?.wins ?? 0),
-							loses: (acc[player]?.loses ?? 0) + (curr[player]?.loses ?? 0),
-							draws: (acc[player]?.draws ?? 0) + (curr[player]?.draws ?? 0),
-							pokemonsDefeated:
-								(acc[player]?.pokemonsDefeated ?? 0) + (curr[player]?.pokemonsDefeated ?? 0),
-							pokemonsLost: (acc[player]?.pokemonsLost ?? 0) + (curr[player]?.pokemonsLost ?? 0),
-							deckType: [...(acc[player]?.deckType ?? []), ...(curr[player]?.deckType ?? [])]
-						}
-					])
-				);
-			}, defaultPlayersStats);
-
-			console.log({ result });
-
-			return result;
-		}
-		return database[tableView];
+	const tournament = $derived(tournaments.find((t) => t.tournamentCount === tableView));
+	const tableData: TableData[] = $derived.by(() => {
+		if (tableView === 0)
+			return players.map((player) => ({
+				player: player.name,
+				wins: player.wins,
+				loses: player.loses,
+				draws: player.draws,
+				prizeCardsGained: player.prizeCardsGained,
+				prizeCardsLost: player.prizeCardsLost
+			})) as TableData[];
+		return tournament?.details.map((detail) => ({
+			player: detail.playerId,
+			wins: detail.wins,
+			loses: detail.loses,
+			draws: detail.draws,
+			prizeCardsGained: detail.prizeCardsGained,
+			prizeCardsLost: detail.prizeCardsLost
+		})) as TableData[];
 	});
 </script>
 
-<button class:selected={tableView === 'all'} onclick={() => changeTableView('all')}
+<button class:selected={tableView === 0} onclick={() => changeTableView(0)}
 	>Klasyfikacja generalna</button
 >
-<button class:selected={tableView === 'first'} onclick={() => changeTableView('first')}
-	>Turniej 1</button
->
-<button class:selected={tableView === 'second'} onclick={() => changeTableView('second')}
+<button class:selected={tableView === 1} onclick={() => changeTableView(1)}>Turniej 1</button>
+<button class:selected={tableView === 2} onclick={() => changeTableView(2)}
 	>Turniej 2 (01.05.2025)</button
 >
 
-{#if tournamentData}
-	<TournamentTable {tournamentData} {tableView} />
+{#if tableData}
+	<TournamentTable {tableData} {tableView} />
 {/if}
 
 <style>
