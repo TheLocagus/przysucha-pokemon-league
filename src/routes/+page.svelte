@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { setContext } from 'svelte';
 	import TournamentTable from '../components/TournamentTable.svelte';
 	import type {
 		Players,
@@ -8,6 +9,7 @@
 		TournamentStats
 	} from '../utils/data';
 	import type { PageProps } from './$types';
+	import { readable, writable } from 'svelte/store';
 
 	let { data }: PageProps = $props();
 
@@ -22,9 +24,13 @@
 
 	const tournaments: TournamentDTO[] = data.tournaments;
 	const players: PlayersDTO[] = data.players;
+
+	setContext('playersContext', readable(players));
 	let tableView = $state(1);
 
-	$inspect(tournaments);
+	const getPlayerNameById = (id: string) => {
+		return players.find((player) => player._id === id)?.name ?? '-----';
+	};
 
 	const changeTableView = (view: number) => {
 		console.log(view);
@@ -43,7 +49,7 @@
 				prizeCardsLost: player.prizeCardsLost
 			})) as TableData[];
 		return tournament?.details.map((detail) => ({
-			player: detail.playerId,
+			player: getPlayerNameById(detail.playerId),
 			wins: detail.wins,
 			loses: detail.loses,
 			draws: detail.draws,
@@ -53,13 +59,21 @@
 	});
 </script>
 
-<button class:selected={tableView === 0} onclick={() => changeTableView(0)}
-	>Klasyfikacja generalna</button
->
-<button class:selected={tableView === 1} onclick={() => changeTableView(1)}>Turniej 1</button>
-<button class:selected={tableView === 2} onclick={() => changeTableView(2)}
-	>Turniej 2 (01.05.2025)</button
->
+<div class="leaderboards">
+	<div class="general-leaderboard">
+		<button class:selected={tableView === 0} onclick={() => changeTableView(0)}
+			>Klasyfikacja generalna</button
+		>
+	</div>
+	<div class="tournaments-leaderboards">
+		{#each tournaments as tournament}
+			{@const count = tournament.tournamentCount}
+			<button class:selected={tableView === count} onclick={() => changeTableView(count)}
+				>Turniej {count}</button
+			>
+		{/each}
+	</div>
+</div>
 
 {#if tableData}
 	<TournamentTable {tableData} {tableView} />
@@ -72,5 +86,21 @@
 		color: black;
 		border: 1px solid black;
 		border-radius: 5px;
+	}
+
+	.leaderboards {
+		display: flex;
+		margin: 20px 0;
+	}
+
+	.general-leaderboard {
+		flex-basis: 20%;
+	}
+
+	.tournaments-leaderboards {
+		flex-grow: 1;
+		display: flex;
+		justify-content: flex-end;
+		gap: 5px;
 	}
 </style>

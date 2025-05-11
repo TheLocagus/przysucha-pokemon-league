@@ -1,5 +1,5 @@
+import clientPromise from '$lib/server/db';
 import type { RequestHandler } from '@sveltejs/kit';
-import clientPromise from '../../+layout.server';
 
 export const GET: RequestHandler = async () => {
 	const client = await clientPromise;
