@@ -1,19 +1,30 @@
 <script lang="ts">
+	import { getContext } from 'svelte';
+	import Options from '../../components/Options.svelte';
+	import type { Readable } from 'svelte/store';
+	import type { PlayersDTO } from '../../utils/data';
+
 	let actionActive = $state('');
 
 	const forms = $state({
 		CREATE_TOURNAMENT: {
 			count: 0,
-			date: new Date().toLocaleDateString()
+			date: new Date().toLocaleDateString(),
+			players: ['']
 		}
 	});
+
+	const players: Readable<PlayersDTO[]> = $state(getContext('playersContext'));
+
+	$inspect(forms.CREATE_TOURNAMENT);
 
 	const createTournament = async () => {
 		const res = await fetch('/api/tournaments', {
 			method: 'POST',
 			body: JSON.stringify({
 				count: forms.CREATE_TOURNAMENT.count,
-				date: forms.CREATE_TOURNAMENT.date
+				date: forms.CREATE_TOURNAMENT.date,
+				players: forms.CREATE_TOURNAMENT.players
 			}),
 			headers: {
 				'content-type': 'application/json'
@@ -36,6 +47,17 @@
 		<input id="date" type="text" bind:value={forms.CREATE_TOURNAMENT.date} />
 		<label for="count">Numer turnieju</label>
 		<input id="count" type="number" bind:value={forms.CREATE_TOURNAMENT.count} />
+		<Options
+			id="players-options"
+			optionList={$players.map((player) => ({
+				value: player._id,
+				label: player.name
+			}))}
+			addOption={(playersIds: string[]) => {
+				forms.CREATE_TOURNAMENT.players = playersIds;
+			}}
+		/>
+
 		<button onclick={async () => await createTournament()}>Potwierdź</button>
 	</form>
 {/if}

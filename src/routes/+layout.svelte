@@ -1,5 +1,10 @@
 <script lang="ts">
-	let { children } = $props();
+	import { setContext } from 'svelte';
+	import { readable } from 'svelte/store';
+
+	let { children, data } = $props();
+
+	setContext('playersContext', readable(data.players));
 </script>
 
 <div class="page-wrapper">
@@ -36,5 +41,7 @@
 
 	.content {
 		width: 80%;
+		min-height: 100vh;
+		background-color: rgba(252, 24, 24, 0.5);
 	}
 </style>

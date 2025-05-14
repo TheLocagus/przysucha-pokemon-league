@@ -25,7 +25,6 @@
 	const tournaments: TournamentDTO[] = data.tournaments;
 	const players: PlayersDTO[] = data.players;
 
-	setContext('playersContext', readable(players));
 	let tableView = $state(1);
 
 	const getPlayerNameById = (id: string) => {
@@ -80,12 +79,22 @@
 {/if}
 
 <style>
-	.selected {
-		padding: 5px 10px;
-		background-color: rgb(209, 231, 13);
+	button:not(.selected) {
+		background-color: white;
+		border: 1px solid black;
 		color: black;
+		padding: 7px 20px;
+		border-radius: 5px;
+		cursor: pointer;
+	}
+
+	.selected {
+		padding: 7px 20px;
+		background-color: var(--intense-red);
+		color: white;
 		border: 1px solid black;
 		border-radius: 5px;
+		cursor: pointer;
 	}
 
 	.leaderboards {
@@ -95,6 +104,8 @@
 
 	.general-leaderboard {
 		flex-basis: 20%;
+		display: flex;
+		justify-content: center;
 	}
 
 	.tournaments-leaderboards {
@@ -102,5 +113,6 @@
 		display: flex;
 		justify-content: flex-end;
 		gap: 5px;
+		margin-right: 30px;
 	}
 </style>

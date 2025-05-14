@@ -2,6 +2,12 @@ import clientPromise from '$lib/server/db';
 import { error, type RequestHandler } from '@sveltejs/kit';
 import { ObjectId } from 'mongodb';
 
+interface PostBody {
+	count: number;
+	date: string;
+	players: string[];
+}
+
 export const GET: RequestHandler = async () => {
 	const client = await clientPromise;
 
@@ -12,16 +18,29 @@ export const GET: RequestHandler = async () => {
 
 export const POST: RequestHandler = async ({ request }) => {
 	try {
-		const body = await request.json();
+		const { count, date, players }: PostBody = await request.json();
 		const client = await clientPromise;
 		const db = client.db('pokemon-league');
 		const tournamentsDb = db.collection('tournaments');
 
+		if (!players || !date || !count) throw Error('Incorrect body');
+
+		const details = players.map((playerId) => ({
+			playerId: new ObjectId(playerId),
+			wins: 0,
+			loses: 0,
+			draws: 0,
+			prizeCardsGained: 0,
+			prizeCardsLost: 0,
+			results: []
+		}));
+
 		await tournamentsDb.insertOne({
 			_id: new ObjectId(),
-			tournamentCount: body.count,
-			date: body.date,
-			details: []
+			tournamentCount: count,
+			date,
+			details,
+			status: 'in-progress'
 		});
 	} catch (e: unknown) {
 		error(500, (e as Error).message);
