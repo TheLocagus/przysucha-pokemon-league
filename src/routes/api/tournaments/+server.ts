@@ -8,6 +8,10 @@ interface PostBody {
 	players: string[];
 }
 
+interface DeleteBody {
+	ids: string[];
+}
+
 export const GET: RequestHandler = async () => {
 	const client = await clientPromise;
 
@@ -42,6 +46,23 @@ export const POST: RequestHandler = async ({ request }) => {
 			details,
 			status: 'in-progress'
 		});
+	} catch (e: unknown) {
+		error(500, (e as Error).message);
+	}
+
+	return new Response();
+};
+
+export const DELETE: RequestHandler = async ({ request }) => {
+	try {
+		const { ids }: DeleteBody = await request.json();
+		const client = await clientPromise;
+		const db = client.db('pokemon-league');
+		const tournamentsDb = db.collection('tournaments');
+
+		for await (const id of ids) {
+			await tournamentsDb.deleteOne({ _id: new ObjectId(id) });
+		}
 	} catch (e: unknown) {
 		error(500, (e as Error).message);
 	}

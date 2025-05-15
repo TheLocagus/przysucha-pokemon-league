@@ -89,11 +89,11 @@
 						{/if}
 					</td>
 					<td style:font-weight="bold" class="player">
-						<span>{data.player}</span>
+						{data.player}
 					</td>
 					{#each columns as column (column.id)}
 						<td style:text-align="center" style:font-size="18px">
-							<span>{data[column.id as keyof TableData]}</span>
+							{data[column.id as keyof TableData]}
 						</td>
 					{/each}
 				</tr>
@@ -148,6 +148,7 @@
 
 	tbody tr td {
 		padding: 40px 1px;
+		color: black;
 	}
 
 	tbody td {
@@ -162,15 +163,5 @@
 
 	.player {
 		margin-left: 5px;
-	}
-
-	.player span {
-		background-color: var(--intense-red);
-	}
-
-	span {
-		background-color: var(--intense-red);
-		padding: 2px 5px;
-		border-radius: 5px;
 	}
 </style>

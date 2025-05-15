@@ -2,14 +2,14 @@
 	let {
 		id,
 		optionList,
-		addOption
+		selectOptions
 	}: {
 		id: string;
 		optionList: {
 			label: string;
 			value: string;
 		}[];
-		addOption: (options: any) => void;
+		selectOptions: (selectedOptions: string[]) => void;
 	} = $props();
 </script>
 
@@ -17,7 +17,7 @@
 	multiple
 	{id}
 	onchange={(e) =>
-		addOption(
+		selectOptions(
 			[...(e.target as HTMLSelectElement).selectedOptions].map((htmlOption) => htmlOption.value)
 		)}
 >

@@ -34,6 +34,7 @@ export interface TournamentDTO {
 	_id: string;
 	tournamentCount: number;
 	details: TournamentDetails[];
+	status: string;
 }
 
 export interface TournamentsDetailsResults {

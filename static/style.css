@@ -1,3 +1,9 @@
 :root {
     --intense-red: rgb(219, 12, 12);
 }
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+}

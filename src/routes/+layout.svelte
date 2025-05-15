@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { setContext } from 'svelte';
-	import { readable } from 'svelte/store';
+	import { readable, writable } from 'svelte/store';
+	import Toast from '../components/Toast.svelte';
 
 	let { children, data } = $props();
 
 	setContext('playersContext', readable(data.players));
+	setContext('tournamentsContext', writable(data.tournaments));
 </script>
 
 <div class="page-wrapper">
@@ -13,6 +15,8 @@
 		{@render children()}
 	</div>
 </div>
+
+<Toast />
 
 <style>
 	:global(*) {
