@@ -2,7 +2,9 @@
 	let {
 		id,
 		optionList,
-		selectOptions
+		selectOptions,
+		multiple = false,
+		value
 	}: {
 		id: string;
 		optionList: {
@@ -10,12 +12,16 @@
 			value: string;
 		}[];
 		selectOptions: (selectedOptions: string[]) => void;
+		multiple?: boolean;
+		value: string;
 	} = $props();
 </script>
 
 <select
-	multiple
+	{multiple}
 	{id}
+	{value}
+	class:multiple
 	onchange={(e) =>
 		selectOptions(
 			[...(e.target as HTMLSelectElement).selectedOptions].map((htmlOption) => htmlOption.value)
@@ -27,8 +33,16 @@
 </select>
 
 <style>
-	select {
+	.multiple {
 		width: 100px;
 		height: 120px;
+	}
+
+	select {
+		border-radius: 5px;
+		padding: 4px 5px;
+		font-size: 1.1em;
+		outline: none;
+		border: 1px solid black;
 	}
 </style>

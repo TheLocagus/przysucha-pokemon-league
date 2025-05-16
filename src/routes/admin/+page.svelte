@@ -15,6 +15,17 @@
 		},
 		REMOVE_TOURNAMENT: {
 			tournamentsIds: ['']
+		},
+		ADD_RESULT: {
+			tournamentId: '',
+			playerOne: {
+				playerId: '',
+				points: 0
+			},
+			playerTwo: {
+				playerId: '',
+				points: 0
+			}
 		}
 	});
 
@@ -23,7 +34,7 @@
 
 	let confirmedRemove = $state(false);
 
-	const removeTournamentOptionList = $derived(
+	const filteredTournamentsOptionList = $derived(
 		$tournaments
 			.filter((tournament) => tournament.status === 'in-progress')
 			.map((t) => ({
@@ -31,6 +42,16 @@
 				label: t.tournamentCount.toString()
 			}))
 	);
+
+	const playersInChosenTournament = $derived.by(() => {
+		const tournament = $tournaments.find(
+			(tournament) => tournament._id === forms.ADD_RESULT.tournamentId
+		);
+
+		const playersIds = tournament?.details.map((players) => players.playerId);
+
+		return $players.filter((player) => playersIds?.includes(player._id));
+	});
 
 	const createTournament = async () => {
 		const res = await fetch('/api/tournaments', {
@@ -98,6 +119,44 @@
 		}
 	};
 
+	const addResult = async () => {
+		console.log(forms.ADD_RESULT);
+		const res = await fetch('/api/tournaments/result', {
+			method: 'POST',
+			body: JSON.stringify(forms.ADD_RESULT),
+			headers: {
+				'content-type': 'application/json'
+			}
+		});
+
+		console.log(res);
+
+		if (res.status === 200) {
+			notifications.update((value) => [
+				...value,
+				{
+					isPositive: true,
+					message: 'Rezultat dodany pomyślnie'
+				}
+			]);
+
+			fetch('/api/tournaments').then(async (res) => {
+				const data = await res.json();
+				tournaments.set(data);
+			});
+		} else {
+			const message = (await res.json()).message;
+			notifications.update((value) => [
+				...value,
+				{
+					isPositive: false,
+					message
+				}
+			]);
+		}
+		console.log(res);
+	};
+
 	$effect(() => {
 		if (actionActive) {
 			confirmedRemove = false;
@@ -108,41 +167,149 @@
 <div class="actions">
 	<button onclick={() => (actionActive = 'CREATE_TOURNAMENT')}>Stwórz nowy turniej</button>
 	<button onclick={() => (actionActive = 'REMOVE_TOURNAMENT')}>Usuń turniej</button>
-	<button>Dodaj rezultat</button>
+	<button onclick={() => (actionActive = 'ADD_RESULT')}>Dodaj rezultat</button>
 </div>
 
-{#if actionActive === 'CREATE_TOURNAMENT'}
-	<form>
-		<label for="date">Data</label>
-		<input id="date" type="text" bind:value={forms.CREATE_TOURNAMENT.date} />
-		<label for="count">Numer turnieju</label>
-		<input id="count" type="number" bind:value={forms.CREATE_TOURNAMENT.count} />
-		<Options
-			id="players-options"
-			optionList={$players.map((player) => ({
-				value: player._id,
-				label: player.name
-			}))}
-			selectOptions={(playersIds: string[]) => {
-				forms.CREATE_TOURNAMENT.players = playersIds;
-			}}
-		/>
+<div class="page-wrap">
+	{#if actionActive === 'CREATE_TOURNAMENT'}
+		<form id="create-tournament-form">
+			<label for="date">Data</label>
+			<input id="date" type="text" bind:value={forms.CREATE_TOURNAMENT.date} />
+			<label for="count">Numer turnieju</label>
+			<input id="count" type="number" bind:value={forms.CREATE_TOURNAMENT.count} />
+			<Options
+				id="players-options"
+				value=""
+				multiple
+				optionList={$players.map((player) => ({
+					value: player._id,
+					label: player.name
+				}))}
+				selectOptions={(playersIds: string[]) => {
+					forms.CREATE_TOURNAMENT.players = playersIds;
+				}}
+			/>
 
-		<button onclick={async () => await createTournament()}>Potwierdź</button>
-	</form>
-{:else if actionActive === 'REMOVE_TOURNAMENT'}
-	<form>
-		<Options
-			id="remove-tournaments"
-			optionList={removeTournamentOptionList}
-			selectOptions={(tournamentsIds) => {
-				forms.REMOVE_TOURNAMENT.tournamentsIds = tournamentsIds;
-			}}
-		/>
-		<button
-			style:background-color={confirmedRemove ? 'red' : 'white'}
-			onclick={() => removeTournament()}
-			>{confirmedRemove ? 'NA PEWNO?' : 'Potwierdź usunięcie turnieju'}</button
-		>
-	</form>
-{/if}
+			<button onclick={async () => await createTournament()}>Potwierdź</button>
+		</form>
+	{:else if actionActive === 'REMOVE_TOURNAMENT'}
+		<form id="remove-tournament-form">
+			<Options
+				id="remove-tournaments"
+				value=""
+				multiple
+				optionList={filteredTournamentsOptionList}
+				selectOptions={(tournamentsIds) => {
+					forms.REMOVE_TOURNAMENT.tournamentsIds = tournamentsIds;
+				}}
+			/>
+			<button
+				style:background-color={confirmedRemove ? 'red' : 'white'}
+				onclick={() => removeTournament()}>{confirmedRemove ? 'NA PEWNO?' : 'Usuń turniej'}</button
+			>
+		</form>
+	{:else if actionActive === 'ADD_RESULT'}
+		<form id="add-result-form">
+			<label style="margin: 10px 0" for="tournament-id-options">Turniej</label>
+			<Options
+				id="tournament-id-options"
+				optionList={filteredTournamentsOptionList}
+				value={forms.ADD_RESULT.tournamentId}
+				selectOptions={(tournamentIdArr) => {
+					forms.ADD_RESULT.tournamentId = tournamentIdArr[0];
+				}}
+			/>
+			{#if forms.ADD_RESULT.tournamentId}
+				<div class="players-section">
+					<div class="player-one">
+						<label for="add-result-one">Gracz 1</label>
+						<Options
+							id="add-result-one"
+							value={forms.ADD_RESULT.playerOne.playerId}
+							optionList={playersInChosenTournament
+								.filter((pl) => pl._id !== forms.ADD_RESULT.playerTwo.playerId)
+								.map((player) => ({
+									label: player.name,
+									value: player._id
+								}))}
+							selectOptions={(playerId) => {
+								forms.ADD_RESULT.playerOne.playerId = playerId[0];
+							}}
+						/>
+						<label style:margin="20px 0 0 0" for="player-one-points">Punkty</label>
+						<input
+							id="player-one-points"
+							type="number"
+							min="0"
+							max="6"
+							bind:value={forms.ADD_RESULT.playerOne.points}
+						/>
+					</div>
+					<div class="separator">VS</div>
+					<div class="player-two">
+						<label for="add-result-two">Gracz 2</label>
+						<Options
+							id="add-result-two"
+							value={forms.ADD_RESULT.playerTwo.playerId}
+							optionList={playersInChosenTournament
+								.filter((pl) => pl._id !== forms.ADD_RESULT.playerOne.playerId)
+								.map((player) => ({
+									label: player.name,
+									value: player._id
+								}))}
+							selectOptions={(playerId) => {
+								forms.ADD_RESULT.playerTwo.playerId = playerId[0];
+							}}
+						/>
+						<label style:margin="20px 0 0 0" for="player-two-points">Punkty</label>
+						<input
+							id="player-two-points"
+							type="number"
+							min="0"
+							max="6"
+							bind:value={forms.ADD_RESULT.playerTwo.points}
+						/>
+					</div>
+				</div>
+
+				<button onclick={() => addResult()}>Dodaj rezultat</button>
+			{/if}
+		</form>
+	{/if}
+</div>
+
+<style>
+	#add-result-form {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	#add-result-form .players-section {
+		display: flex;
+		margin: 20px 0;
+	}
+
+	.players-section .player-one,
+	.players-section .player-two {
+		display: flex;
+		flex-direction: column;
+	}
+
+	input {
+		width: 100px;
+		border-radius: 5px;
+		padding: 4px 5px;
+		font-size: 1.1em;
+		border: 1px solid black;
+		outline: none;
+	}
+
+	.separator {
+		display: flex;
+		align-items: center;
+		margin: 0 40px;
+		font-size: 1.4em;
+		font-weight: bold;
+	}
+</style>
