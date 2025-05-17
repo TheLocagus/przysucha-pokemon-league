@@ -12,6 +12,10 @@ interface DeleteBody {
 	ids: string[];
 }
 
+interface PutBody {
+	tournamentsIds: string[];
+}
+
 export const GET: RequestHandler = async () => {
 	const client = await clientPromise;
 
@@ -46,6 +50,23 @@ export const POST: RequestHandler = async ({ request }) => {
 			details,
 			status: 'in-progress'
 		});
+	} catch (e: unknown) {
+		error(500, (e as Error).message);
+	}
+
+	return new Response();
+};
+
+export const PUT: RequestHandler = async ({ request }) => {
+	try {
+		const body: PutBody = await request.json();
+		const client = await clientPromise;
+		const db = client.db('pokemon-league');
+		const tournamentsDb = db.collection('tournaments');
+
+		for await (const id of body.tournamentsIds) {
+			await tournamentsDb.updateOne({ _id: new ObjectId(id) }, { $set: { status: 'finished' } });
+		}
 	} catch (e: unknown) {
 		error(500, (e as Error).message);
 	}

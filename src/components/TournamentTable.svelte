@@ -67,7 +67,7 @@
 				{#each columns as column (column.id)}
 					<th
 						id={column.id}
-						style:font-size="20px"
+						style:font-size="16px"
 						style:color="white"
 						style:width={column.width ?? 'auto'}>{column.label}</th
 					>
@@ -89,10 +89,10 @@
 						{/if}
 					</td>
 					<td style:font-weight="bold" class="player">
-						{data.player}
+						<span style:font-size="14px">{data.player}</span>
 					</td>
 					{#each columns as column (column.id)}
-						<td style:text-align="center" style:font-size="18px">
+						<td style:text-align="center" style:font-size="14px">
 							{data[column.id as keyof TableData]}
 						</td>
 					{/each}
@@ -147,7 +147,7 @@
 	}
 
 	tbody tr td {
-		padding: 40px 1px;
+		padding: 30px 1px;
 		color: black;
 	}
 

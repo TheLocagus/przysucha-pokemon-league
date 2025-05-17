@@ -26,6 +26,9 @@
 				playerId: '',
 				points: 0
 			}
+		},
+		END_TOURNAMENT: {
+			tournamentsIds: ['']
 		}
 	});
 
@@ -71,7 +74,7 @@
 				...value,
 				{
 					isPositive: true,
-					message: 'Turniej został dodany pomyślnie'
+					message: 'Turniej dodany pomyślnie'
 				}
 			]);
 
@@ -79,6 +82,15 @@
 				const data = await res.json();
 				tournaments.set(data);
 			});
+		} else {
+			const message = (await res.json()).message;
+			notifications.update((value) => [
+				...value,
+				{
+					isPositive: false,
+					message
+				}
+			]);
 		}
 
 		console.log(res);
@@ -113,6 +125,15 @@
 				});
 
 				confirmedRemove = false;
+			} else {
+				const message = (await res.json()).message;
+				notifications.update((value) => [
+					...value,
+					{
+						isPositive: false,
+						message
+					}
+				]);
 			}
 
 			console.log(res);
@@ -157,6 +178,40 @@
 		console.log(res);
 	};
 
+	const endTournament = async () => {
+		const res = await fetch('/api/tournaments', {
+			method: 'PUT',
+			body: JSON.stringify(forms.END_TOURNAMENT),
+			headers: {
+				'content-type': 'application/json'
+			}
+		});
+
+		if (res.status === 200) {
+			notifications.update((value) => [
+				...value,
+				{
+					isPositive: true,
+					message: 'Ceremonia zamknięcia przebiegła pomyślnie'
+				}
+			]);
+
+			fetch('/api/tournaments').then(async (res) => {
+				const data = await res.json();
+				tournaments.set(data);
+			});
+		} else {
+			const message = (await res.json()).message;
+			notifications.update((value) => [
+				...value,
+				{
+					isPositive: false,
+					message
+				}
+			]);
+		}
+	};
+
 	$effect(() => {
 		if (actionActive) {
 			confirmedRemove = false;
@@ -168,6 +223,7 @@
 	<button onclick={() => (actionActive = 'CREATE_TOURNAMENT')}>Stwórz nowy turniej</button>
 	<button onclick={() => (actionActive = 'REMOVE_TOURNAMENT')}>Usuń turniej</button>
 	<button onclick={() => (actionActive = 'ADD_RESULT')}>Dodaj rezultat</button>
+	<button onclick={() => (actionActive = 'END_TOURNAMENT')}>Zakończ turniej</button>
 </div>
 
 <div class="page-wrap">
@@ -274,6 +330,22 @@
 
 				<button onclick={() => addResult()}>Dodaj rezultat</button>
 			{/if}
+		</form>
+	{:else if actionActive === 'END_TOURNAMENT'}
+		<form id="end-tournament-form">
+			<Options
+				id="end-tournaments"
+				value={forms.END_TOURNAMENT.tournamentsIds}
+				multiple
+				optionList={filteredTournamentsOptionList}
+				selectOptions={(tournamentsIds) => {
+					forms.END_TOURNAMENT.tournamentsIds = tournamentsIds;
+				}}
+			/>
+			<button
+				style:background-color={confirmedRemove ? 'red' : 'white'}
+				onclick={() => endTournament()}>Zakończ turniej</button
+			>
 		</form>
 	{/if}
 </div>
