@@ -218,6 +218,11 @@
 		console.log('scores: ', await res.json());
 	};
 
+	const playersMatchHistoryTest = async () => {
+		const res = await fetch('/api/utils/playersMatchHistory/681f93f4559618353cb8a06b');
+		console.log('match history: ', await res.json());
+	};
+
 	$effect(() => {
 		if (actionActive) {
 			confirmedRemove = false;
@@ -231,6 +236,7 @@
 	<button onclick={() => (actionActive = 'ADD_RESULT')}>Dodaj rezultat</button>
 	<button onclick={() => (actionActive = 'END_TOURNAMENT')}>Zakończ turniej</button>
 	<button onclick={() => playersStatsTest()}>PlayersStats test</button>
+	<button onclick={() => playersMatchHistoryTest()}>PlayersMatchHistory</button>
 </div>
 
 <div class="page-wrap">
