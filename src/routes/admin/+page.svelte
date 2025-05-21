@@ -20,17 +20,21 @@
 			tournamentId: '',
 			playerOne: {
 				playerId: '',
-				points: 0
+				points: 0,
+				name: ''
 			},
 			playerTwo: {
 				playerId: '',
-				points: 0
+				points: 0,
+				name: ''
 			}
 		},
 		END_TOURNAMENT: {
 			tournamentsIds: ['']
 		}
 	});
+
+	$inspect(forms.ADD_RESULT);
 
 	const players: Readable<PlayersDTO[]> = $state(getContext('playersContext'));
 	let tournaments: Writable<TournamentDTO[]> = $state(getContext('tournamentsContext'));
@@ -142,7 +146,7 @@
 
 	const addResult = async () => {
 		console.log(forms.ADD_RESULT);
-		const res = await fetch('/api/tournaments/result', {
+		const res = await fetch('/api/matches', {
 			method: 'POST',
 			body: JSON.stringify(forms.ADD_RESULT),
 			headers: {
@@ -152,6 +156,8 @@
 
 		console.log(res);
 
+		console.log('score: ', await res.json());
+
 		if (res.status === 200) {
 			notifications.update((value) => [
 				...value,
@@ -160,11 +166,6 @@
 					message: 'Rezultat dodany pomyślnie'
 				}
 			]);
-
-			fetch('/api/tournaments').then(async (res) => {
-				const data = await res.json();
-				tournaments.set(data);
-			});
 		} else {
 			const message = (await res.json()).message;
 			notifications.update((value) => [
@@ -212,6 +213,11 @@
 		}
 	};
 
+	const playersStatsTest = async () => {
+		const res = await fetch('/api/utils/playersStats');
+		console.log('scores: ', await res.json());
+	};
+
 	$effect(() => {
 		if (actionActive) {
 			confirmedRemove = false;
@@ -224,6 +230,7 @@
 	<button onclick={() => (actionActive = 'REMOVE_TOURNAMENT')}>Usuń turniej</button>
 	<button onclick={() => (actionActive = 'ADD_RESULT')}>Dodaj rezultat</button>
 	<button onclick={() => (actionActive = 'END_TOURNAMENT')}>Zakończ turniej</button>
+	<button onclick={() => playersStatsTest()}>PlayersStats test</button>
 </div>
 
 <div class="page-wrap">
@@ -289,7 +296,10 @@
 									value: player._id
 								}))}
 							selectOptions={(playerId) => {
+								const playerName =
+									playersInChosenTournament.find((list) => list._id === playerId[0])?.name ?? '';
 								forms.ADD_RESULT.playerOne.playerId = playerId[0];
+								forms.ADD_RESULT.playerOne.name = playerName;
 							}}
 						/>
 						<label style:margin="20px 0 0 0" for="player-one-points">Punkty</label>
@@ -314,7 +324,10 @@
 									value: player._id
 								}))}
 							selectOptions={(playerId) => {
+								const playerName =
+									playersInChosenTournament.find((list) => list._id === playerId[0])?.name ?? '';
 								forms.ADD_RESULT.playerTwo.playerId = playerId[0];
+								forms.ADD_RESULT.playerTwo.name = playerName;
 							}}
 						/>
 						<label style:margin="20px 0 0 0" for="player-two-points">Punkty</label>

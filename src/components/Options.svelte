@@ -9,9 +9,9 @@
 		id: string;
 		optionList: {
 			label: string;
-			value: string;
+			value: any;
 		}[];
-		selectOptions: (selectedOptions: string[]) => void;
+		selectOptions: (selectedOptions: any[]) => void;
 		multiple?: boolean;
 		value: string;
 	} = $props();
