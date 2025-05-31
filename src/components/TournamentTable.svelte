@@ -1,22 +1,16 @@
 <script lang="ts">
 	import Trophy from 'svelte-material-icons/Trophy.svelte';
+	import type { PlayersDTO, PlayersStats } from '$types';
 
 	let {
 		tableData,
-		tableView
+		tournamentId,
+		players
 	}: {
-		tableData: TableData[];
-		tableView: number;
+		tableData: PlayersStats[];
+		tournamentId: string | undefined;
+		players: PlayersDTO[];
 	} = $props();
-
-	interface TableData {
-		player: string;
-		wins: number;
-		loses: number;
-		draws: number;
-		prizeCardsGained: number;
-		prizeCardsLost: number;
-	}
 
 	const columns = [
 		{
@@ -45,7 +39,7 @@
 	];
 
 	const sortedTableData = $derived.by(() => {
-		if (tableView === 1) {
+		if (tournamentId === undefined) {
 			return tableData.toSorted((a, b) => (b?.prizeCardsGained ?? 0) - (a?.prizeCardsGained ?? 0));
 		} else {
 			return tableData.toSorted((a, b) => {
@@ -56,6 +50,10 @@
 			});
 		}
 	});
+
+	const getPlayerNameById = (id: string) => {
+		return players.find((player) => player._id === id)?.name ?? '-----';
+	};
 </script>
 
 <div class="table-wrapper">
@@ -75,7 +73,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			{#each sortedTableData as data, i (data.player)}
+			{#each sortedTableData as data, i}
 				<tr>
 					<td style:text-align="center">
 						{#if i === 0}
@@ -89,11 +87,11 @@
 						{/if}
 					</td>
 					<td style:font-weight="bold" class="player">
-						<span style:font-size="14px">{data.player}</span>
+						<span style:font-size="14px">{getPlayerNameById(data.playerId)}</span>
 					</td>
 					{#each columns as column (column.id)}
 						<td style:text-align="center" style:font-size="14px">
-							{data[column.id as keyof TableData]}
+							{data[column.id as keyof PlayersStats]}
 						</td>
 					{/each}
 				</tr>

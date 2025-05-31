@@ -1,81 +1,57 @@
 <script lang="ts">
-	import { setContext } from 'svelte';
+	import { onMount } from 'svelte';
 	import TournamentTable from '../components/TournamentTable.svelte';
-	import type {
-		Players,
-		PlayersDTO,
-		PlayerStats,
-		TournamentDTO,
-		TournamentStats
-	} from '../utils/data';
 	import type { PageProps } from './$types';
-	import { readable, writable } from 'svelte/store';
+	import type { PlayersDTO, PlayersStats, TournamentDTO } from '$types';
 
 	let { data }: PageProps = $props();
 
-	interface TableData {
-		player: string;
-		wins: number;
-		loses: number;
-		draws: number;
-		prizeCardsGained: number;
-		prizeCardsLost: number;
-	}
+	onMount(async () => {
+		tableData = await getTableData(tournamentId);
+	});
 
 	const tournaments: TournamentDTO[] = data.tournaments;
 	const players: PlayersDTO[] = data.players;
+	let tableData: PlayersStats[] = $state([]);
+	let tournamentId: string | undefined = $state(undefined);
 
-	let tableView = $state(1);
+	const getTableData = async (id: string | undefined) => {
+		if (!id) {
+			const res = await fetch(`/api/utils/playersStats`);
+			return res.json();
+		}
 
-	const getPlayerNameById = (id: string) => {
-		return players.find((player) => player._id === id)?.name ?? '-----';
+		const res = await fetch(`/api/utils/tournamentsStats/${id}`);
+		return res.json();
 	};
 
-	const changeTableView = (view: number) => {
-		console.log(view);
-		tableView = view;
-	};
-
-	const tournament = $derived(tournaments.find((t) => t.tournamentCount === tableView));
-	const tableData: TableData[] = $derived.by(() => {
-		if (tableView === 0)
-			return players.map((player) => ({
-				player: player.name,
-				wins: player.wins,
-				loses: player.loses,
-				draws: player.draws,
-				prizeCardsGained: player.prizeCardsGained,
-				prizeCardsLost: player.prizeCardsLost
-			})) as TableData[];
-		return tournament?.details.map((detail) => ({
-			player: getPlayerNameById(detail.playerId),
-			wins: detail.wins,
-			loses: detail.loses,
-			draws: detail.draws,
-			prizeCardsGained: detail.prizeCardsGained,
-			prizeCardsLost: detail.prizeCardsLost
-		})) as TableData[];
+	$effect(() => {
+		getTableData(tournamentId).then((res) => {
+			tableData = res;
+		});
 	});
 </script>
 
 <div class="leaderboards">
 	<div class="general-leaderboard">
-		<button class:selected={tableView === 0} onclick={() => changeTableView(0)}
-			>Klasyfikacja generalna</button
+		<button
+			class:selected={tournamentId === undefined}
+			onclick={async () => (tournamentId = undefined)}>Klasyfikacja generalna</button
 		>
 	</div>
 	<div class="tournaments-leaderboards">
 		{#each tournaments as tournament}
 			{@const count = tournament.tournamentCount}
-			<button class:selected={tableView === count} onclick={() => changeTableView(count)}
-				>Turniej {count}</button
+			<button
+				class:selected={tournamentId === tournament._id}
+				onclick={async () => (tournamentId = tournament._id)}>Turniej {count}</button
 			>
 		{/each}
 	</div>
 </div>
 
 {#if tableData}
-	<TournamentTable {tableData} {tableView} />
+	<TournamentTable {tableData} {tournamentId} {players} />
 {/if}
 
 <style>

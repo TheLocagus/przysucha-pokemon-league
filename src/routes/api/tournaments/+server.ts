@@ -33,21 +33,11 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		if (!players || !date || !count) throw Error('Incorrect body');
 
-		const details = players.map((playerId) => ({
-			playerId: new ObjectId(playerId),
-			wins: 0,
-			loses: 0,
-			draws: 0,
-			prizeCardsGained: 0,
-			prizeCardsLost: 0,
-			results: []
-		}));
-
 		await tournamentsDb.insertOne({
 			_id: new ObjectId(),
 			tournamentCount: count,
 			date,
-			details,
+			players,
 			status: 'in-progress'
 		});
 	} catch (e: unknown) {

@@ -223,6 +223,16 @@
 		console.log('match history: ', await res.json());
 	};
 
+	const tournamentMatchHistoryTest = async () => {
+		const res = await fetch('/api/utils/tournamentsMatchHistory/682ce0a026a63bbd4e57d99c');
+		console.log('match history: ', await res.json());
+	};
+
+	const tournamentsStatsTest = async () => {
+		const res = await fetch('/api/utils/tournamentsStats/682ce0a026a63bbd4e57d99c');
+		console.log('tournaments stats: ', await res.json());
+	};
+
 	$effect(() => {
 		if (actionActive) {
 			confirmedRemove = false;
@@ -237,6 +247,8 @@
 	<button onclick={() => (actionActive = 'END_TOURNAMENT')}>Zakończ turniej</button>
 	<button onclick={() => playersStatsTest()}>PlayersStats test</button>
 	<button onclick={() => playersMatchHistoryTest()}>PlayersMatchHistory</button>
+	<button onclick={() => tournamentMatchHistoryTest()}>tournamentMatchHistoryTest</button>
+	<button onclick={() => tournamentsStatsTest()}>tournamentsStatsTest</button>
 </div>
 
 <div class="page-wrap">

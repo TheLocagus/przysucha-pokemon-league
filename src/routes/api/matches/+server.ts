@@ -35,8 +35,6 @@ export const POST: RequestHandler = async ({ request }) => {
 		)
 			throw Error('Invalid points');
 
-		// const isDraw = playerOne.points === 6 && playerTwo.points === 6;
-
 		await matchesDb.insertOne({
 			_id: new ObjectId(),
 			tournamentId: new ObjectId(tournamentId),
