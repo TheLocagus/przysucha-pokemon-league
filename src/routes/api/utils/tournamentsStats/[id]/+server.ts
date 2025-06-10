@@ -31,16 +31,22 @@ export const GET: RequestHandler = async ({ params }) => {
 		const scores = matches.reduce(
 			(score, match) => {
 				if (
-					match.playerOne._id.toString() !== playerId &&
-					match.playerTwo._id.toString() !== playerId
+					match.playerOne._id.toString() !== playerId.toString() &&
+					match.playerTwo._id.toString() !== playerId.toString()
 				) {
 					return score;
 				}
 
+				console.log('test');
+
 				const player =
-					match.playerOne._id.toString() === playerId ? match.playerOne : match.playerTwo;
+					match.playerOne._id.toString() === playerId.toString()
+						? match.playerOne
+						: match.playerTwo;
 				const opponent =
-					match.playerOne._id.toString() === playerId ? match.playerTwo : match.playerOne;
+					match.playerOne._id.toString() === playerId.toString()
+						? match.playerTwo
+						: match.playerOne;
 
 				if (player.score > opponent.score) score.wins++;
 				else if (player.score < opponent.score) score.loses++;
@@ -59,7 +65,6 @@ export const GET: RequestHandler = async ({ params }) => {
 				prizeCardsLost: 0
 			}
 		);
-
 		return [
 			...playerStats,
 			{

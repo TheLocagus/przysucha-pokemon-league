@@ -1,14 +1,14 @@
 <script lang="ts">
 	import Trophy from 'svelte-material-icons/Trophy.svelte';
-	import type { PlayersDTO, PlayersStats } from '$types';
+	import type { PlayersDTO, PlayersStats, TournamentDTO } from '$types';
 
 	let {
 		tableData,
-		tournamentId,
+		tournament,
 		players
 	}: {
 		tableData: PlayersStats[];
-		tournamentId: string | undefined;
+		tournament: TournamentDTO | undefined;
 		players: PlayersDTO[];
 	} = $props();
 
@@ -39,7 +39,7 @@
 	];
 
 	const sortedTableData = $derived.by(() => {
-		if (tournamentId === undefined) {
+		if (tournament?.tournamentCount === 1) {
 			return tableData.toSorted((a, b) => (b?.prizeCardsGained ?? 0) - (a?.prizeCardsGained ?? 0));
 		} else {
 			return tableData.toSorted((a, b) => {

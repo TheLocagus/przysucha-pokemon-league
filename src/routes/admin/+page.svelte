@@ -2,8 +2,8 @@
 	import { getContext } from 'svelte';
 	import type { Readable, Writable } from 'svelte/store';
 	import Options from '../../components/Options.svelte';
-	import type { PlayersDTO, TournamentDTO } from '../../utils/data';
 	import { notifications } from '../utils/utils';
+	import type { PlayersDTO, TournamentDTO } from '$types';
 
 	let actionActive = $state('');
 
@@ -34,8 +34,6 @@
 		}
 	});
 
-	$inspect(forms.ADD_RESULT);
-
 	const players: Readable<PlayersDTO[]> = $state(getContext('playersContext'));
 	let tournaments: Writable<TournamentDTO[]> = $state(getContext('tournamentsContext'));
 
@@ -51,11 +49,14 @@
 	);
 
 	const playersInChosenTournament = $derived.by(() => {
+		if (forms.ADD_RESULT.tournamentId === '') return [];
 		const tournament = $tournaments.find(
 			(tournament) => tournament._id === forms.ADD_RESULT.tournamentId
 		);
 
-		const playersIds = tournament?.details.map((players) => players.playerId);
+		if (!tournament) throw Error('Tournament not found!');
+
+		const playersIds = tournament.players;
 
 		return $players.filter((player) => playersIds?.includes(player._id));
 	});
@@ -155,8 +156,6 @@
 		});
 
 		console.log(res);
-
-		console.log('score: ', await res.json());
 
 		if (res.status === 200) {
 			notifications.update((value) => [

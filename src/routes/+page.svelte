@@ -7,26 +7,26 @@
 	let { data }: PageProps = $props();
 
 	onMount(async () => {
-		tableData = await getTableData(tournamentId);
+		tableData = await getTableData(tournament);
 	});
 
 	const tournaments: TournamentDTO[] = data.tournaments;
 	const players: PlayersDTO[] = data.players;
 	let tableData: PlayersStats[] = $state([]);
-	let tournamentId: string | undefined = $state(undefined);
+	let tournament: TournamentDTO | undefined = $state(undefined);
 
-	const getTableData = async (id: string | undefined) => {
-		if (!id) {
+	const getTableData = async (tournament: TournamentDTO | undefined) => {
+		if (!tournament) {
 			const res = await fetch(`/api/utils/playersStats`);
 			return res.json();
 		}
 
-		const res = await fetch(`/api/utils/tournamentsStats/${id}`);
+		const res = await fetch(`/api/utils/tournamentsStats/${tournament._id}`);
 		return res.json();
 	};
 
 	$effect(() => {
-		getTableData(tournamentId).then((res) => {
+		getTableData(tournament).then((res) => {
 			tableData = res;
 		});
 	});
@@ -34,24 +34,23 @@
 
 <div class="leaderboards">
 	<div class="general-leaderboard">
-		<button
-			class:selected={tournamentId === undefined}
-			onclick={async () => (tournamentId = undefined)}>Klasyfikacja generalna</button
+		<button class:selected={tournament === undefined} onclick={() => (tournament = undefined)}
+			>Klasyfikacja generalna</button
 		>
 	</div>
 	<div class="tournaments-leaderboards">
-		{#each tournaments as tournament}
-			{@const count = tournament.tournamentCount}
+		{#each tournaments as tournamentBtn}
+			{@const count = tournamentBtn.tournamentCount}
 			<button
-				class:selected={tournamentId === tournament._id}
-				onclick={async () => (tournamentId = tournament._id)}>Turniej {count}</button
+				class:selected={tournament?._id === tournamentBtn._id}
+				onclick={() => (tournament = tournamentBtn)}>Turniej {count}</button
 			>
 		{/each}
 	</div>
 </div>
 
 {#if tableData}
-	<TournamentTable {tableData} {tournamentId} {players} />
+	<TournamentTable {tableData} {tournament} {players} />
 {/if}
 
 <style>
