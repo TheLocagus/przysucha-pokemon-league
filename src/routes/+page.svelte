@@ -3,6 +3,7 @@
 	import TournamentTable from '../components/TournamentTable.svelte';
 	import type { PageProps } from './$types';
 	import type { PlayersDTO, PlayersStats, TournamentDTO } from '$types';
+	import TournamentDetails from '../components/TournamentDetails.svelte';
 
 	let { data }: PageProps = $props();
 
@@ -51,6 +52,9 @@
 
 {#if tableData}
 	<TournamentTable {tableData} {tournament} {players} />
+	{#if tournament !== undefined}
+		<TournamentDetails tournamentId={tournament._id} />
+	{/if}
 {/if}
 
 <style>
