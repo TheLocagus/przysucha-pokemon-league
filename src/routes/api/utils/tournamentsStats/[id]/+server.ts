@@ -37,8 +37,6 @@ export const GET: RequestHandler = async ({ params }) => {
 					return score;
 				}
 
-				console.log('test');
-
 				const player =
 					match.playerOne._id.toString() === playerId.toString()
 						? match.playerOne

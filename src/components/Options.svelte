@@ -13,7 +13,7 @@
 		}[];
 		selectOptions: (selectedOptions: any[]) => void;
 		multiple?: boolean;
-		value: string;
+		value?: string;
 	} = $props();
 </script>
 

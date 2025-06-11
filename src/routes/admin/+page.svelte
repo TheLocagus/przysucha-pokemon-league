@@ -2,7 +2,7 @@
 	import { getContext } from 'svelte';
 	import type { Readable, Writable } from 'svelte/store';
 	import Options from '../../components/Options.svelte';
-	import { notifications } from '../utils/utils';
+	import { notifications, setNotifications } from '../utils/utils';
 	import type { PlayersDTO, TournamentDTO } from '$types';
 
 	let actionActive = $state('');
@@ -75,13 +75,7 @@
 		});
 
 		if (res.status === 200) {
-			notifications.update((value) => [
-				...value,
-				{
-					isPositive: true,
-					message: 'Turniej dodany pomyślnie'
-				}
-			]);
+			setNotifications('Turniej dodany pomyślnie');
 
 			fetch('/api/tournaments').then(async (res) => {
 				const data = await res.json();
@@ -97,8 +91,6 @@
 				}
 			]);
 		}
-
-		console.log(res);
 	};
 
 	const removeTournament = async () => {
@@ -116,13 +108,7 @@
 			});
 
 			if (res.status === 200) {
-				notifications.update((value) => [
-					...value,
-					{
-						isPositive: true,
-						message: 'Usunięto pomyślnie'
-					}
-				]);
+				setNotifications('Usunięto pomyślnie');
 
 				fetch('/api/tournaments').then(async (res) => {
 					const data = await res.json();
@@ -158,13 +144,7 @@
 		console.log(res);
 
 		if (res.status === 200) {
-			notifications.update((value) => [
-				...value,
-				{
-					isPositive: true,
-					message: 'Rezultat dodany pomyślnie'
-				}
-			]);
+			setNotifications('Rezultat dodany pomyślnie');
 		} else {
 			const message = (await res.json()).message;
 			notifications.update((value) => [
@@ -175,7 +155,6 @@
 				}
 			]);
 		}
-		console.log(res);
 	};
 
 	const endTournament = async () => {
@@ -188,13 +167,7 @@
 		});
 
 		if (res.status === 200) {
-			notifications.update((value) => [
-				...value,
-				{
-					isPositive: true,
-					message: 'Ceremonia zamknięcia przebiegła pomyślnie'
-				}
-			]);
+			setNotifications('Ceremonia zamknięcia przebiegła pomyślnie');
 
 			fetch('/api/tournaments').then(async (res) => {
 				const data = await res.json();
@@ -365,7 +338,6 @@
 		<form id="end-tournament-form">
 			<Options
 				id="end-tournaments"
-				value={forms.END_TOURNAMENT.tournamentsIds}
 				multiple
 				optionList={filteredTournamentsOptionList}
 				selectOptions={(tournamentsIds) => {

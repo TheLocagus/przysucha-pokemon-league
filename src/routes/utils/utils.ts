@@ -6,3 +6,13 @@ export const notifications: Writable<
 		message: string;
 	}[]
 > = writable([]);
+
+export const setNotifications = (message: string, isPositive = true) => {
+	notifications.update((value) => [
+		...value,
+		{
+			isPositive,
+			message
+		}
+	]);
+};
