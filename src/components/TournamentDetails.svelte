@@ -39,7 +39,7 @@
 	.title {
 		box-sizing: border-box;
 		width: 100%;
-		background-color: var(--intense-red);
+		background-color: #7a0000;
 		color: white;
 		padding: 30px 0;
 		font-size: 1.4em;
@@ -50,8 +50,9 @@
 	}
 
 	.content {
+		margin: 0 20px;
 		display: flex;
 		flex-wrap: wrap;
-		background-color: rgb(110, 110, 110);
+		justify-content: space-between;
 	}
 </style>
