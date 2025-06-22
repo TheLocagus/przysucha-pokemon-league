@@ -87,7 +87,11 @@
 						{/if}
 					</td>
 					<td style:font-weight="bold" class="player">
-						<span style:font-size="14px">{getPlayerNameById(data.playerId)}</span>
+						<span style:font-size="14px">
+							<a href={`player/${data.playerId}`}>
+								{getPlayerNameById(data.playerId)}
+							</a>
+						</span>
 					</td>
 					{#each columns as column (column.id)}
 						<td style:text-align="center" style:font-size="14px">
