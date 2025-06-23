@@ -166,4 +166,10 @@
 	.player {
 		margin-left: 5px;
 	}
+
+	a {
+		color: black;
+		text-decoration: none;
+		font-style: italic;
+	}
 </style>

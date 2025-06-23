@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { setContext } from 'svelte';
-	import KeyboardReturnIcon from 'svelte-material-icons/KeyboardReturn.svelte';
 	import ShieldCrownIcon from 'svelte-material-icons/ShieldCrown.svelte';
 	import { readable, writable } from 'svelte/store';
 	import Toast from '../components/Toast.svelte';
@@ -12,6 +11,20 @@
 	setContext('tournamentsContext', writable(data.tournaments));
 </script>
 
+<div class="header">
+	<div class="left">
+		<a href="/">
+			<img src="/logo.png" alt="Pikachu na niedźwiedziu" />
+			<span> Przysuska Liga Pokemon </span>
+		</a>
+	</div>
+	<div class="right">
+		<a href="/admin">
+			<ShieldCrownIcon size="30px" />
+		</a>
+	</div>
+</div>
+
 <div class="page-wrapper">
 	<div class="background-wrapper"></div>
 	<div class="content">
@@ -20,15 +33,6 @@
 </div>
 
 <Toast />
-{#if page.url.pathname === '/admin'}
-	<a href="/">
-		<KeyboardReturnIcon size="30px" />
-	</a>
-{:else}
-	<a href="/admin">
-		<ShieldCrownIcon size="30px" />
-	</a>
-{/if}
 
 <style>
 	:global(*) {
@@ -61,9 +65,34 @@
 		background-color: rgba(252, 24, 24, 0.5);
 	}
 
+	.header {
+		display: flex;
+		justify-content: space-between;
+		padding: 0 40px;
+		height: 64px;
+		background-color: white;
+		box-shadow: 0 3px 2px 0 #00000042;
+	}
+
+	.left,
+	.right {
+		display: flex;
+		align-items: center;
+		gap: 20px;
+	}
+
 	a {
-		position: absolute;
-		top: 2%;
-		left: 1%;
+		display: flex;
+		align-items: center;
+		gap: 5px;
+		color: black;
+		text-decoration: none;
+		font-weight: bold;
+	}
+
+	img {
+		height: 50px;
+		width: 50px;
+		border-radius: 5px;
 	}
 </style>
