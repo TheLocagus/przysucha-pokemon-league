@@ -114,7 +114,6 @@
 		width: 95%;
 		border: none;
 		border-spacing: 0;
-		background-color: rgb(224, 224, 224);
 		letter-spacing: 1px;
 		border: 1px solid black;
 		border-radius: 10px;

@@ -126,13 +126,10 @@
 					}
 				]);
 			}
-
-			console.log(res);
 		}
 	};
 
 	const addResult = async () => {
-		console.log(forms.ADD_RESULT);
 		const res = await fetch('/api/matches', {
 			method: 'POST',
 			body: JSON.stringify(forms.ADD_RESULT),
@@ -140,8 +137,6 @@
 				'content-type': 'application/json'
 			}
 		});
-
-		console.log(res);
 
 		if (res.status === 200) {
 			setNotifications('Rezultat dodany pomyślnie');

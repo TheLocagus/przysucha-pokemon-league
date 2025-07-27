@@ -42,3 +42,28 @@ export interface PlayersDTO {
 	prizeCardsLost: number;
 	tournamentsDetails: TournamentsDetailsDTO[];
 }
+
+export interface PlayerProfileDTO {
+	player: PlayerProfileDetailsDTO;
+	tournamentsMatches: Record<string, TournamentsMatchesDetailsDTO[]>;
+}
+
+export interface PlayerProfileDetailsDTO {
+	birthyear: number;
+	favouritePokemon: { name: string; type: string };
+	name: string;
+	_id: string;
+}
+
+export interface PlayerScoreDTO {
+	_id: string;
+	name: string;
+	score: number;
+}
+
+export interface TournamentsMatchesDetailsDTO {
+	playerOne: PlayerScoreDTO;
+	playerTwo: PlayerScoreDTO;
+	tournamentId: string;
+	_id: string;
+}
