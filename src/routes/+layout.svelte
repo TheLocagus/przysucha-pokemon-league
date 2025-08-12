@@ -1,14 +1,16 @@
 <script lang="ts">
-	import { page } from '$app/state';
-	import { setContext } from 'svelte';
+	import { onMount, setContext } from 'svelte';
 	import ShieldCrownIcon from 'svelte-material-icons/ShieldCrown.svelte';
+	import PokeballIcon from 'svelte-material-icons/Pokeball.svelte';
 	import { readable, writable } from 'svelte/store';
 	import Toast from '../components/Toast.svelte';
+	import TCGdex from '@tcgdex/sdk';
 
 	let { children, data } = $props();
 
 	setContext('playersContext', readable(data.players));
 	setContext('tournamentsContext', writable(data.tournaments));
+	setContext('tcgdex', data.tcgdex);
 </script>
 
 <div class="header">
@@ -19,6 +21,9 @@
 		</a>
 	</div>
 	<div class="right">
+		<a href="/pokemons">
+			<PokeballIcon size="30px" />
+		</a>
 		<a href="/admin">
 			<ShieldCrownIcon size="30px" />
 		</a>
