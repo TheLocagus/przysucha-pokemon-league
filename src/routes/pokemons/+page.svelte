@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
-	import TCGdex from '@tcgdex/sdk';
+	import TCGdex, { type CardList } from '@tcgdex/sdk';
 
 	const tcgdex: TCGdex = getContext('tcgdex');
 	let card = $state();
-	let list = $state();
+	let list: CardList | undefined = $state();
 	const getRandomPokemon = async () => {
 		const response = await tcgdex.fetch('sets', 'swsh3');
-		return response.cards;
+		return response?.cards;
 	};
 </script>
 
@@ -19,9 +19,9 @@
 	>
 </div>
 
-{#if card}
+<!-- {#if card}
 	<img src={card.getImageURL('low', 'png')} alt="" />
-{/if}
+{/if} -->
 
 {#if list}
 	{#each list as card}

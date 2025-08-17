@@ -1,5 +1,17 @@
 :root {
     --intense-red: rgb(219, 12, 12);
+
+    --c1-grass: #268326ad;
+    --c2-grass: rgb(25, 167, 60);
+    --c3-grass: rgb(168, 255, 207);
+    --c4-grass: #153b15;
+    --background-grass: url('/profile-backgrounds/bulbasaur.png');
+
+    --c1-water: #20518a;
+    --c2-water: rgb(31, 94, 189);
+    --c3-water: rgb(168, 235, 255);
+    --c4-water: #030836;
+    --background-water: url('/profile-backgrounds/gyarados.png');
 }
 
 * {

@@ -2,12 +2,21 @@
 	import SingleResultInProfile from '../../../components/userProfile/SingleResultInProfile.svelte';
 	import ArrowLeft from 'svelte-material-icons/ArrowLeftBold.svelte';
 	import ArrowRight from 'svelte-material-icons/ArrowRightBold.svelte';
+	import type { PlayerProfileDTO, TournamentDTO } from '$types';
 
-	let { data } = $props();
+	let {
+		data
+	}: {
+		data: {
+			player: PlayerProfileDTO;
+			tournaments: TournamentDTO[];
+		};
+	} = $props();
 
 	const playerData = $derived(data.player);
 	const allTournamentsInfo = $derived(data.tournaments);
 	const tournamentsNumber = $derived(Object.keys(playerData.tournamentsMatches).length);
+	const type = $derived(data.player.player.favouritePokemon.type);
 
 	const getAge = (year: number) => {
 		console.log(typeof year);
@@ -20,7 +29,7 @@
 	};
 </script>
 
-<div class="player-page">
+<div class="player-page {type}">
 	<div class="general">
 		<div class="avatar">
 			<div class="img-container"></div>
@@ -87,10 +96,41 @@
 		cursor: not-allowed;
 	}
 
-	.player-page {
-		background-image: url('/profile-backgrounds/bulbasaur.png');
+	.player-page.grass {
+		background-image: var(--background-grass);
 		background-position: 400px -300px;
 		background-size: 80%;
+
+		.match-history #title {
+			background-color: var(--c1-grass);
+		}
+		.tournament {
+			background-color: var(--c3-grass);
+			.title {
+				background-color: var(--c2-grass);
+				color: var(--c4-grass);
+			}
+		}
+	}
+
+	.player-page.water {
+		background-image: var(--background-water);
+		background-position: 250px -80px;
+		background-size: 90%;
+
+		.match-history #title {
+			background-color: var(--c1-water);
+		}
+		.tournament {
+			background-color: var(--c3-water);
+			.title {
+				background-color: var(--c2-water);
+				color: var(--c4-water);
+			}
+		}
+	}
+
+	.player-page {
 		min-height: 100vh;
 	}
 
@@ -133,7 +173,6 @@
 	.match-history #title {
 		height: 50px;
 		padding-left: 40px;
-		background-color: #268326ad;
 		display: flex;
 		align-items: center;
 		color: white;
@@ -158,15 +197,12 @@
 		border: 1px solid rgba(0, 0, 0, 0.253);
 		border-bottom-left-radius: 15px;
 		border-bottom-right-radius: 15px;
-		background-color: rgb(168, 255, 207);
 		border: 1px solid black;
 
 		.title {
 			color: transparent;
 			text-align: center;
-			background-color: rgb(25, 167, 60);
 			font-weight: bold;
-			color: #153b15;
 			padding: 10px 0;
 			font-size: 24px;
 			font-weight: 400;
