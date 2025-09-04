@@ -115,8 +115,8 @@
 
 	.player-page.water {
 		background-image: var(--background-water);
-		background-position: 250px -80px;
-		background-size: 90%;
+		background-position: 100px -100px;
+		background-size: 100%;
 
 		.match-history #title {
 			background-color: var(--c1-water);
@@ -126,6 +126,57 @@
 			.title {
 				background-color: var(--c2-water);
 				color: var(--c4-water);
+			}
+		}
+	}
+
+	.player-page.fight {
+		background-image: var(--background-fight);
+		background-position: 0px -100px;
+		background-size: 100%;
+
+		.match-history #title {
+			background-color: var(--c1-fight);
+		}
+		.tournament {
+			background-color: var(--c3-fight);
+			.title {
+				background-color: var(--c2-fight);
+				color: var(--c4-fight);
+			}
+		}
+	}
+
+	.player-page.electro {
+		background-image: var(--background-electro);
+		background-position: 0px -100px;
+		background-size: 100%;
+
+		.match-history #title {
+			background-color: var(--c1-electro);
+		}
+		.tournament {
+			background-color: var(--c3-electro);
+			.title {
+				background-color: var(--c2-electro);
+				color: var(--c4-electro);
+			}
+		}
+	}
+
+	.player-page.dark {
+		background-image: var(--background-dark);
+		background-position: 0px -100px;
+		background-size: 100%;
+
+		.match-history #title {
+			background-color: var(--c1-dark);
+		}
+		.tournament {
+			background-color: var(--c3-dark);
+			.title {
+				background-color: var(--c2-dark);
+				color: var(--c4-dark);
 			}
 		}
 	}

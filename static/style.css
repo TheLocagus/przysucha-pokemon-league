@@ -11,7 +11,26 @@
     --c2-water: rgb(31, 94, 189);
     --c3-water: rgb(168, 235, 255);
     --c4-water: #030836;
-    --background-water: url('/profile-backgrounds/gyarados.png');
+    --background-water: url('/profile-backgrounds/lapras.png');
+
+    --c1-fight: #502405;
+    --c2-fight: rgb(161, 74, 23);
+    --c3-fight: rgb(255, 214, 180);
+    --c4-fight: #361a03;
+    --background-fight: url('/profile-backgrounds/ursaluna.png');
+
+    --c1-electro: #BA8E23;
+    --c2-electro: #F3D217;
+    --c3-electro: rgb(255, 244, 180);
+    --c4-electro: #635c03;
+    --background-electro: url('/profile-backgrounds/pikachu.png');
+
+    --c1-dark: #2c0550;
+    --c2-dark: rgb(106, 23, 161);
+    --c3-dark: rgb(215, 180, 255);
+    --c4-dark: #2a0336;
+    --background-dark: url('/profile-backgrounds/gengar.png');
+
 }
 
 * {

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
-	import TCGdex, { type CardList } from '@tcgdex/sdk';
+	import TCGdex, { Query, type CardList } from '@tcgdex/sdk';
 
 	const tcgdex: TCGdex = getContext('tcgdex');
 	let card = $state();
@@ -9,15 +9,29 @@
 		const response = await tcgdex.fetch('sets', 'swsh3');
 		return response?.cards;
 	};
+
+	// let searchStr = $state('');
 </script>
 
-<div class="header">
+<!-- <div class="header">
 	<button
 		onclick={async () => {
 			list = await getRandomPokemon();
 		}}>Get cards</button
 	>
-</div>
+</div> -->
+
+<input
+	type="text"
+	oninput={async (e) => {
+		let searchStr = (e.target as HTMLInputElement).value;
+		if (searchStr) {
+			list = await tcgdex.card.list(new Query().includes('name', searchStr).contains('image', ''));
+		} else {
+			list = [];
+		}
+	}}
+/>
 
 <!-- {#if card}
 	<img src={card.getImageURL('low', 'png')} alt="" />
@@ -25,7 +39,8 @@
 
 {#if list}
 	{#each list as card}
-		<img src={card.image + '/low' + '.png'} alt="" />
+		<!-- <img src={card.image + '/low' + '.png'} alt="" /> -->
+		<div>{card.name}</div>
 	{/each}
 {/if}
 
