@@ -21,7 +21,14 @@
 	>
 </div> -->
 
-<input
+<button
+	onclick={async () => {
+		// await tcgdex.card.list();
+		await tcgdex.random.card();
+	}}>GET</button
+>
+
+<!-- <input
 	type="text"
 	oninput={async (e) => {
 		let searchStr = (e.target as HTMLInputElement).value;
@@ -31,7 +38,7 @@
 			list = [];
 		}
 	}}
-/>
+/> -->
 
 <!-- {#if card}
 	<img src={card.getImageURL('low', 'png')} alt="" />

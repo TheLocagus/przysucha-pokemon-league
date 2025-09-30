@@ -3,6 +3,7 @@
 	import ArrowLeft from 'svelte-material-icons/ArrowLeftBold.svelte';
 	import ArrowRight from 'svelte-material-icons/ArrowRightBold.svelte';
 	import type { PlayerProfileDTO, TournamentDTO } from '$types';
+	import AddEditDeckModal from '../../../components/AddEditDeckModal.svelte';
 
 	let {
 		data
@@ -12,6 +13,8 @@
 			tournaments: TournamentDTO[];
 		};
 	} = $props();
+
+	let open = $state(false);
 
 	const playerData = $derived(data.player);
 	const allTournamentsInfo = $derived(data.tournaments);
@@ -43,6 +46,9 @@
 			<div class="down">
 				<p>Liczba rozegranych turniejów: {tournamentsNumber}</p>
 			</div>
+		</div>
+		<div class="actions">
+			<button onclick={() => (open = true)}>Dodaj talię</button>
 		</div>
 	</div>
 	<div class="match-history">
@@ -89,6 +95,10 @@
 					</div> -->
 	</div>
 </div>
+
+{#if open}
+	<AddEditDeckModal bind:open />
+{/if}
 
 <style>
 	.tournaments :global(.disabled) {
