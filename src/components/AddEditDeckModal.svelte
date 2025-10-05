@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { getContext, onDestroy, onMount } from 'svelte';
+	import { getContext, onMount } from 'svelte';
 	import Input from './Input.svelte';
 	import TCGdex, { Query, type CardResume } from '@tcgdex/sdk';
 	import Loader from './Loader.svelte';
+	import DeleteIcon from 'svelte-material-icons/Delete.svelte';
 	const tcgdex: TCGdex = getContext('tcgdex');
 
 	let {
@@ -53,6 +54,13 @@
 		deck: {}
 	});
 
+	const deckDetails = $derived(Object.entries(formValues.deck));
+	const deckLimit = $derived(
+		Object.values(formValues.deck).reduce((acc, curr) => {
+			return acc + curr.count;
+		}, 0)
+	);
+
 	const increaseCard = (card: CardResume) => {
 		if (!formValues.deck[card.id]) {
 			formValues.deck = {
@@ -74,6 +82,17 @@
 			formValues.deck[card.id].count -= 1;
 		}
 	};
+
+	const getDeckLimitClass = () => {
+		if (deckLimit === 60) return 'ready';
+		if (deckLimit < 60) return 'not-ready';
+		return 'out-of-limit';
+	};
+
+	const handleDeleteCard = (cardId: string) => {
+		console.log(cardId);
+		delete formValues.deck[cardId];
+	};
 </script>
 
 <dialog {open}>
@@ -94,10 +113,11 @@
 					<Input id="name" bind:value={formValues.name} />
 				</div>
 			</div>
-			<div class="row">
+			<div class="row cards">
 				<div class="label">Karty</div>
 				<div class="field">
 					<Input id="search-cards" bind:value={searchStr} bind:input={searchInput} />
+
 					{#if searchStr.length >= 3}
 						<div
 							class="option-list"
@@ -124,6 +144,32 @@
 									</div>
 								</div>
 							{/each}
+						</div>
+					{/if}
+					{#if deckDetails.length}
+						<div class="summary">
+							{#each deckDetails as [cardId, cardDetails] (cardId)}
+								<div class="summary-card">
+									<span>{cardDetails.name} x{cardDetails.count} </span>
+									<span
+										role="button"
+										onclick={() => {
+											handleDeleteCard(cardId);
+										}}
+										tabindex="0"
+										onkeydown={(e) => {
+											if (e.key.toLowerCase() === 'enter') {
+												handleDeleteCard(cardId);
+											}
+										}}
+									>
+										<DeleteIcon class="delete-icon" />
+									</span>
+								</div>
+							{/each}
+						</div>
+						<div class="total">
+							<span>Cards limit: <span class={getDeckLimitClass()}>{deckLimit}/60</span></span>
 						</div>
 					{/if}
 				</div>
@@ -187,14 +233,51 @@
 			margin-top: 20px;
 		}
 		.row {
-			display: flex;
-			align-items: center;
-			height: 40px;
-			.label {
-				flex-basis: 30%;
+			display: grid;
+			grid-template-columns: 0.3fr 1fr;
+			margin: 10px 0;
+
+			.summary {
+				display: flex;
+				margin-top: 5px;
+
+				.summary-card {
+					display: flex;
+					gap: 14px;
+					border: 1px solid brown;
+					border-radius: 5px;
+					background-color: rgb(148, 147, 147);
+					color: black;
+					padding: 4px 8px;
+				}
+				:global(.delete-icon) {
+					color: black;
+					cursor: pointer;
+					transition: 0.2s;
+				}
+				:global(.delete-icon:hover) {
+					color: red;
+				}
 			}
-			.field {
-				flex-grow: 1;
+
+			.total {
+				margin-top: 20px;
+
+				span span {
+					font-weight: bold;
+				}
+
+				.ready {
+					color: green;
+				}
+
+				.not-ready {
+					color: rgb(255, 136, 0);
+				}
+
+				.out-of-limit {
+					color: red;
+				}
 			}
 		}
 	}
@@ -207,18 +290,21 @@
 		height: 60px;
 		background-color: var(--intense-red);
 		padding-right: 50px;
+		border-bottom-left-radius: 9px;
+		border-bottom-right-radius: 9px;
 
 		button {
 			padding: 5px 25px;
 			border: 1px solid black;
 			cursor: pointer;
-			transition: 0.3s;
+			transition: 0.2s;
 			border-radius: 5px;
 		}
 
 		button:hover {
-			background-color: var(--intense-red);
+			background-color: black;
 			color: white;
+			border: 1px solid white;
 		}
 	}
 
