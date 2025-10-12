@@ -4,8 +4,12 @@
 	import TCGdex, { Query, type CardResume } from '@tcgdex/sdk';
 	import Loader from './Loader.svelte';
 	import DeleteIcon from 'svelte-material-icons/Delete.svelte';
-	const tcgdex: TCGdex = getContext('tcgdex');
+	import type { DeckForm } from '$types';
+	import { page } from '$app/state';
+	import { setNotifications } from '../routes/utils/utils';
 
+	const tcgdex: TCGdex = getContext('tcgdex');
+	const userId = $derived(page.params.slug);
 	let {
 		open = $bindable()
 	}: {
@@ -38,48 +42,37 @@
 		open = false;
 	};
 
-	interface DeckForm {
-		name: string;
-		deck: Record<
-			string,
-			{
-				name: string;
-				count: number;
-			}
-		>;
-	}
-
 	const formValues: DeckForm = $state({
 		name: '',
-		deck: {}
+		cards: {}
 	});
 
-	const deckDetails = $derived(Object.entries(formValues.deck));
+	const deckDetails = $derived(Object.entries(formValues.cards));
 	const deckLimit = $derived(
-		Object.values(formValues.deck).reduce((acc, curr) => {
+		Object.values(formValues.cards).reduce((acc, curr) => {
 			return acc + curr.count;
 		}, 0)
 	);
 
 	const increaseCard = (card: CardResume) => {
-		if (!formValues.deck[card.id]) {
-			formValues.deck = {
-				...formValues.deck,
+		if (!formValues.cards[card.id]) {
+			formValues.cards = {
+				...formValues.cards,
 				[card.id]: {
 					name: card.name,
 					count: 1
 				}
 			};
 		} else {
-			formValues.deck[card.id].count += 1;
+			formValues.cards[card.id].count += 1;
 		}
 	};
 
 	const decreaseCard = (card: CardResume) => {
-		if (formValues.deck[card.id].count === 1) {
-			delete formValues.deck[card.id];
+		if (formValues.cards[card.id].count === 1) {
+			delete formValues.cards[card.id];
 		} else {
-			formValues.deck[card.id].count -= 1;
+			formValues.cards[card.id].count -= 1;
 		}
 	};
 
@@ -91,7 +84,26 @@
 
 	const handleDeleteCard = (cardId: string) => {
 		console.log(cardId);
-		delete formValues.deck[cardId];
+		delete formValues.cards[cardId];
+	};
+
+	const saveDeck = async () => {
+		try {
+			loading = true;
+			const res = await fetch(`/api/player/${userId}/deck`, {
+				method: 'POST',
+				body: JSON.stringify({
+					name: formValues.name,
+					cards: formValues.cards
+				})
+			});
+
+			if (res.status) setNotifications('Zapisano pomyślnie!', true);
+		} catch (e: unknown) {
+			setNotifications((e as Error).message, false);
+		} finally {
+			loading = false;
+		}
 	};
 </script>
 
@@ -126,7 +138,7 @@
 							style="width: {searchInputPosition?.width ?? 0}px"
 						>
 							{#each filteredCards as card}
-								{@const savedCard = formValues.deck[card.id]}
+								{@const savedCard = formValues.cards[card.id]}
 								<div class="element">
 									<div class="image-part">
 										<img height="280px" src="{card.image}/low.png" alt="" />
@@ -177,7 +189,7 @@
 		</div>
 		<div id="footer">
 			<div>
-				<button>Ok</button>
+				<button onclick={saveDeck}>Ok</button>
 			</div>
 		</div>
 	</div>
@@ -240,6 +252,7 @@
 			.summary {
 				display: flex;
 				margin-top: 5px;
+				flex-wrap: wrap;
 
 				.summary-card {
 					display: flex;

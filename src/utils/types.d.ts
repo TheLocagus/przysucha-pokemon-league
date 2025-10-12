@@ -67,3 +67,14 @@ export interface TournamentsMatchesDetailsDTO {
 	tournamentId: string;
 	_id: string;
 }
+
+export interface DeckForm {
+	name: string;
+	cards: Record<
+		string,
+		{
+			name: string;
+			count: number;
+		}
+	>;
+}
