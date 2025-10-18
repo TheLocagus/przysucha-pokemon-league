@@ -1,36 +1,45 @@
 :root {
     --intense-red: rgb(219, 12, 12);
+}
 
-    --c1-grass: #268326ad;
-    --c2-grass: rgb(25, 167, 60);
-    --c3-grass: rgb(168, 255, 207);
-    --c4-grass: #153b15;
-    --background-grass: url('/profile-backgrounds/bulbasaur.png');
+:root div.player-page.grass {
+    --c1: #268326ad;
+    --c2: rgb(25, 167, 60);
+    --c3: rgb(168, 255, 207);
+    --c4: #153b15;
+    --background: url('/profile-backgrounds/bulbasaur.png');
+}
 
-    --c1-water: #20518a;
-    --c2-water: rgb(31, 94, 189);
-    --c3-water: rgb(168, 235, 255);
-    --c4-water: #030836;
-    --background-water: url('/profile-backgrounds/lapras.png');
+:root div.player-page.water {
+    --c1: #20518a;
+    --c2: rgb(31, 94, 189);
+    --c3: rgb(168, 235, 255);
+    --c4: #030836;
+    --background: url('/profile-backgrounds/lapras.png');
+}
 
-    --c1-fight: #502405;
-    --c2-fight: rgb(161, 74, 23);
-    --c3-fight: rgb(255, 214, 180);
-    --c4-fight: #361a03;
-    --background-fight: url('/profile-backgrounds/ursaluna.png');
+:root div.player-page.fight {
+    --c1: #502405;
+    --c2: rgb(161, 74, 23);
+    --c3: rgb(255, 214, 180);
+    --c4: #361a03;
+    --background: url('/profile-backgrounds/ursaluna.png');
+}
 
-    --c1-electro: #BA8E23;
-    --c2-electro: #F3D217;
-    --c3-electro: rgb(255, 244, 180);
-    --c4-electro: #635c03;
-    --background-electro: url('/profile-backgrounds/pikachu.png');
+:root div.player-page.electro {
+    --c1: #BA8E23;
+    --c2: #F3D217;
+    --c3: rgb(255, 244, 180);
+    --c4: #635c03;
+    --background: url('/profile-backgrounds/pikachu.png');
+}
 
-    --c1-dark: #2c0550;
-    --c2-dark: rgb(106, 23, 161);
-    --c3-dark: rgb(215, 180, 255);
-    --c4-dark: #2a0336;
-    --background-dark: url('/profile-backgrounds/gengar.png');
-
+:root div.player-page.dark {
+    --c1: #2c0550;
+    --c2: rgb(106, 23, 161);
+    --c3: rgb(215, 180, 255);
+    --c4: #2a0336;
+    --background: url('/profile-backgrounds/gengar.png');
 }
 
 * {

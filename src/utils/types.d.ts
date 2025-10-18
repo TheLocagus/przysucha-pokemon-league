@@ -49,10 +49,11 @@ export interface PlayerProfileDTO {
 }
 
 export interface PlayerProfileDetailsDTO {
+	_id: string;
+	name: string;
 	birthyear: number;
 	favouritePokemon: { name: string; type: string };
-	name: string;
-	_id: string;
+	decks: DeckDTO[];
 }
 
 export interface PlayerScoreDTO {
@@ -78,3 +79,5 @@ export interface DeckForm {
 		}
 	>;
 }
+
+export type DeckDTO = DeckForm & { _id: string };
