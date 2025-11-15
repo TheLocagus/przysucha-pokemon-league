@@ -45,54 +45,59 @@
 				<p>Wiek: {getAge(playerData.player.birthyear)}</p>
 				<p>Ulubiony pokemon: {playerData.player.favouritePokemon.name}</p>
 			</div>
-			<div class="down">
-				<p>Liczba rozegranych turniejów: {tournamentsNumber}</p>
-			</div>
 		</div>
-		<div class="actions">
+		<!-- <div class="actions">
 			<button onclick={() => (open = true)}>Dodaj talię</button>
-		</div>
+		</div> -->
 	</div>
-	<ProfileSegment title="Historia meczów">
-		{#snippet content()}
-			<div class="tournaments">
-				<div class="arrow">
-					<ArrowLeft size="40" class={tournamentsNumber <= 3 ? 'disabled' : ''} />
-				</div>
-				{#each Object.entries(playerData.tournamentsMatches).toReversed() as [tournamentId, matches]}
-					<div class="tournament">
-						<div class="title">
-							<p>Turniej {getTournamentNumber(tournamentId)}</p>
-						</div>
-						<div class="results">
-							{#each matches as match}
-								<SingleResultInProfile
-									playerOne={match.playerOne._id.toString() === playerData.player._id
-										? match.playerOne
-										: match.playerTwo}
-									playerTwo={match.playerOne._id === playerData.player._id
-										? match.playerTwo
-										: match.playerOne}
-								/>
-							{/each}
-						</div>
+	<div class="segments">
+		<ProfileSegment title="Historia meczów">
+			{#snippet content()}
+				<div class="tournaments">
+					<div class="arrow">
+						<ArrowLeft size="40" class={tournamentsNumber <= 3 ? 'disabled' : ''} />
 					</div>
-				{/each}
-				<div class="arrow">
-					<ArrowRight size="40" class={tournamentsNumber <= 3 ? 'disabled' : ''} />
+					{#each Object.entries(playerData.tournamentsMatches).toReversed() as [tournamentId, matches]}
+						<div class="tournament">
+							<div class="title">
+								<p>Turniej {getTournamentNumber(tournamentId)}</p>
+							</div>
+							<div class="results">
+								{#each matches as match}
+									<SingleResultInProfile
+										playerOne={match.playerOne._id.toString() === playerData.player._id
+											? match.playerOne
+											: match.playerTwo}
+										playerTwo={match.playerOne._id === playerData.player._id
+											? match.playerTwo
+											: match.playerOne}
+									/>
+								{/each}
+							</div>
+						</div>
+					{/each}
+					<div class="arrow">
+						<ArrowRight size="40" class={tournamentsNumber <= 3 ? 'disabled' : ''} />
+					</div>
 				</div>
-			</div>
-		{/snippet}
-	</ProfileSegment>
-	<ProfileSegment title="Talie">
-		{#snippet content()}
-			<DecksDetails decks={playerData.player.decks} />
-		{/snippet}
-	</ProfileSegment>
+			{/snippet}
+		</ProfileSegment>
+		<ProfileSegment title="Talie">
+			{#snippet content()}
+				<DecksDetails decks={playerData.player.decks} />
+			{/snippet}
+		</ProfileSegment>
+	</div>
 </div>
 
 {#if open}
-	<AddEditDeckModal bind:open />
+	<AddEditDeckModal
+		bind:open
+		initValues={{
+			name: '',
+			cards: {}
+		}}
+	/>
 {/if}
 
 <style>
@@ -102,9 +107,6 @@
 	}
 
 	.player-page {
-		background-image: var(--background);
-		background-size: 100%;
-
 		.tournament {
 			background-color: var(--c3);
 			.title {
@@ -114,6 +116,9 @@
 		}
 	}
 
+	.segments {
+	}
+
 	.player-page {
 		min-height: 100vh;
 	}
@@ -121,14 +126,19 @@
 	.general {
 		color: white;
 		display: flex;
-		padding: 50px 0;
+		height: 300px;
+		/* padding: 50px 0; */
 		gap: 20px;
+		background-image: var(--background-header);
+		background-repeat: no-repeat;
+		background-size: cover;
 	}
 
 	.general .avatar {
 		flex-basis: 30%;
 		display: flex;
 		justify-content: flex-end;
+		margin-top: 50px;
 	}
 
 	.general .avatar .img-container {
@@ -142,6 +152,7 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: space-between;
+		margin-top: 50px;
 	}
 
 	.data .up {

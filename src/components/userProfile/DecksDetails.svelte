@@ -4,6 +4,9 @@
 	import { getContext } from 'svelte';
 	import PreviousIcon from 'svelte-material-icons/ArrowLeftBoldBox.svelte';
 	import NextIcon from 'svelte-material-icons/ArrowRightBoldBox.svelte';
+	import EditIcon from 'svelte-material-icons/PencilBox.svelte';
+	import DeleteIcon from 'svelte-material-icons/Delete.svelte';
+	import AddEditDeckModal from '../AddEditDeckModal.svelte';
 
 	interface $Props {
 		decks: DeckDTO[];
@@ -13,11 +16,11 @@
 	const tcgdex: TCGdex = getContext('tcgdex');
 
 	let chosenDeck: DeckDTO | undefined = $state();
-	let chosenCard: string = $state('');
+	let chosenCard = $state('');
+	let editModalOpen = $state(false);
 
 	const getSingleImage = async (cardId: string, q: 'low' | 'high' = 'low') => {
 		const card = await tcgdex.card.get(cardId);
-
 		return card?.getImageURL(q, 'png');
 	};
 
@@ -59,6 +62,10 @@
 		}
 	}}
 />
+
+{#if editModalOpen}
+	<AddEditDeckModal title="Edytuj talię" bind:open={editModalOpen} initValues={chosenDeck} />
+{/if}
 
 {#if chosenCard}
 	<!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -111,27 +118,41 @@
 	</div>
 	{#if chosenDeck}
 		<div class="deck-details">
-			{#each Object.entries(chosenDeck.cards) as [cardId, card] (cardId)}
-				<div class="card">
-					<span>{card.count}</span>
-					{#await getSingleImage(cardId) then imageUrl}
-						<!-- svelte-ignore a11y_click_events_have_key_events -->
-						<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-						<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-						<img
-							tabindex={0}
-							src={imageUrl}
-							alt="{card.name} {card.count}"
-							onclick={() => (chosenCard = cardId)}
-							onkeydown={(e) => {
-								if (e.key === 'Enter') {
-									chosenCard = cardId;
-								}
-							}}
-						/>
-					{/await}
-				</div>
-			{/each}
+			<div class="cards">
+				{#each Object.entries(chosenDeck.cards) as [cardId, card] (cardId)}
+					<div class="card">
+						<span>{card.count}</span>
+						{#await getSingleImage(cardId) then imageUrl}
+							<!-- svelte-ignore a11y_click_events_have_key_events -->
+							<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+							<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+							<img
+								tabindex={0}
+								src={imageUrl}
+								alt="{card.name} {card.count}"
+								onclick={() => (chosenCard = cardId)}
+								onkeydown={(e) => {
+									if (e.key === 'Enter') {
+										chosenCard = cardId;
+									}
+								}}
+							/>
+						{/await}
+					</div>
+				{/each}
+			</div>
+			<div class="actions">
+				<span
+					onclick={() => {
+						editModalOpen = true;
+					}}
+				>
+					<EditIcon size={30} />
+				</span>
+				<span>
+					<DeleteIcon size={30} />
+				</span>
+			</div>
 		</div>
 	{/if}
 </div>
@@ -141,31 +162,53 @@
 		display: flex;
 		padding: 0 100px;
 		gap: 10px;
-		background-color: var(--c1);
+		background-color: var(--c1-opacity);
 	}
 
 	button {
 		margin: 10px 0;
 		padding: 8px 20px;
 		font-size: 1.5em;
-		background-color: var(--c3);
+		background-color: var(--c2);
 		border: 1px solid var(--c4);
 		border-radius: 8px;
 		outline: none;
 		cursor: pointer;
 		transition: 0.2s;
+		color: white;
 	}
 
 	button.active {
-		background-color: var(--c2);
-		color: white;
+		background-color: var(--c3);
+		color: black;
 	}
 
 	.deck-details {
 		display: flex;
-		flex-wrap: wrap;
+
 		margin: 0 24px;
+	}
+
+	.cards {
+		display: flex;
+		flex-wrap: wrap;
 		gap: 20px;
+		flex-basis: 90%;
+	}
+
+	.actions {
+		display: flex;
+		justify-content: center;
+		flex-grow: 1;
+		gap: 10px;
+
+		span {
+			cursor: pointer;
+
+			:global(svg:hover) {
+				color: var(--c4);
+			}
+		}
 	}
 
 	.card {

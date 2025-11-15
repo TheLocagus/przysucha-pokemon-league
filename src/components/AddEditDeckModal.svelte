@@ -11,10 +11,19 @@
 	const tcgdex: TCGdex = getContext('tcgdex');
 	const userId = $derived(page.params.slug);
 	let {
-		open = $bindable()
+		open = $bindable(),
+		initValues = {
+			name: '',
+			cards: {}
+		},
+		title = 'Dodaj talię'
 	}: {
 		open: boolean;
+		initValues?: DeckForm;
+		title?: string;
 	} = $props();
+
+	let formValues = $state(initValues);
 
 	let searchInput: HTMLInputElement | undefined = $state();
 	let allCards: CardResume[] = $state([]);
@@ -25,6 +34,8 @@
 	);
 
 	let searchInputPosition = $derived(searchInput?.getBoundingClientRect());
+
+	$inspect(formValues);
 
 	onMount(async () => {
 		try {
@@ -41,11 +52,6 @@
 	const closeModal = () => {
 		open = false;
 	};
-
-	const formValues: DeckForm = $state({
-		name: '',
-		cards: {}
-	});
 
 	const deckDetails = $derived(Object.entries(formValues.cards));
 	const deckLimit = $derived(
@@ -115,7 +121,7 @@
 		<Loader {loading} />
 		<div id="header">
 			<div class="icon">@</div>
-			<div class="title">DODAJ DECK</div>
+			<div class="title">{title}</div>
 			<button class="close" onclick={closeModal}>X</button>
 		</div>
 		<div id="content">
@@ -203,6 +209,7 @@
 		top: 0;
 		border: none;
 		background-color: transparent;
+		z-index: 9999999;
 	}
 
 	#background {

@@ -7,7 +7,7 @@
     --c2: rgb(25, 167, 60);
     --c3: rgb(168, 255, 207);
     --c4: #153b15;
-    --background: url('/profile-backgrounds/bulbasaur.png');
+    --background-header: url('/profile-backgrounds/bulbasaur.png');
 }
 
 :root div.player-page.water {
@@ -15,7 +15,10 @@
     --c2: rgb(31, 94, 189);
     --c3: rgb(168, 235, 255);
     --c4: #030836;
+    --c1-opacity: #20518a79;
     --background: url('/profile-backgrounds/lapras.png');
+    --background-header: url('/profile-backgrounds/background-header.png');
+    --background-content: url('/profile-backgrounds/background-content.png');
 }
 
 :root div.player-page.fight {

@@ -12,12 +12,16 @@
 
 <div id="profile-segment">
 	<h2 id="title">{title}</h2>
-	{@render content()}
+	<div class="content">
+		{@render content()}
+	</div>
 </div>
 
 <style>
-	#profile-segment {
-		margin-top: 30px;
+	.content {
+		padding: 30px 0;
+		background-image: var(--background-content);
+		background-repeat: repeat;
 	}
 
 	#title {
