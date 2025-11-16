@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { getContext, onMount } from 'svelte';
 	import Input from './Input.svelte';
-	import TCGdex, { Query, type CardResume } from '@tcgdex/sdk';
+	import { Query, type CardResume } from '@tcgdex/sdk';
 	import Loader from './Loader.svelte';
 	import DeleteIcon from 'svelte-material-icons/Delete.svelte';
 	import type { DeckForm } from '$types';
 	import { page } from '$app/state';
-	import { setNotifications } from '../routes/utils/utils';
+	import { notifications, setNotifications } from '../routes/utils/utils';
+	import { tcgdex } from '../tcgdex';
 
-	const tcgdex: TCGdex = getContext('tcgdex');
 	const userId = $derived(page.params.slug);
 	let {
 		open = $bindable(),
@@ -35,17 +35,25 @@
 
 	let searchInputPosition = $derived(searchInput?.getBoundingClientRect());
 
-	$inspect(formValues);
-
 	onMount(async () => {
 		try {
 			loading = true;
-			allCards = await tcgdex.card.list(Query.create().contains('image', 'https'));
+			if (!$tcgdex) {
+				notifications.update((n) => [
+					...n,
+					{
+						isPositive: false,
+						message: 'Unable to connect with TCGDex.'
+					}
+				]);
+				return;
+			}
+			allCards = await $tcgdex.card.list(Query.create().contains('image', 'https'));
+			console.log('test');
 		} catch (e) {
 		} finally {
 			loading = false;
 		}
-		console.log(allCards[0]);
 		localStorage.removeItem('@tcgdex-cache/https://api.tcgdex.net/v2/en/cards');
 	});
 

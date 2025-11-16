@@ -35,12 +35,10 @@ export interface TournamentDTO {
 export interface PlayersDTO {
 	_id: string;
 	name: string;
-	wins: number;
-	loses: number;
-	draws: number;
-	prizeCardsGained: number;
-	prizeCardsLost: number;
-	tournamentsDetails: TournamentsDetailsDTO[];
+	birthyear: number;
+	favouritePokemon: FavouritePokemon;
+	username: string;
+	role: string;
 }
 
 export interface PlayerProfileDTO {
@@ -52,8 +50,13 @@ export interface PlayerProfileDetailsDTO {
 	_id: string;
 	name: string;
 	birthyear: number;
-	favouritePokemon: { name: string; type: string };
+	favouritePokemon: FavouritePokemon;
 	decks: DeckDTO[];
+}
+
+export interface FavouritePokemon {
+	name: string;
+	type: string;
 }
 
 export interface PlayerScoreDTO {

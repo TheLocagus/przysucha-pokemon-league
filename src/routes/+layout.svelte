@@ -5,31 +5,58 @@
 	import { readable, writable } from 'svelte/store';
 	import Toast from '../components/Toast.svelte';
 	import TCGdex from '@tcgdex/sdk';
+	import { redirect } from '@sveltejs/kit';
+	import { goto, invalidateAll } from '$app/navigation';
+	import { tcgdex } from '../tcgdex';
 
 	let { children, data } = $props();
 
+	let user = $derived(data.user);
+
+	onMount(() => {
+		tcgdex.set(new TCGdex('en'));
+	});
+
 	setContext('playersContext', readable(data.players));
 	setContext('tournamentsContext', writable(data.tournaments));
-	setContext('tcgdex', data.tcgdex);
+
+	$effect.pre(() => {
+		if (data.user) {
+			setContext('userContext', data.user);
+		}
+	});
+
+	const logout = async () => {
+		const res = await fetch('/api/auth/logout', {
+			method: 'DELETE'
+		});
+
+		if (res) {
+			await invalidateAll();
+			goto('/login');
+		}
+	};
 </script>
 
-<div class="header">
-	<div class="left">
-		<a href="/">
-			<img src="/logo.png" alt="Pikachu na niedźwiedziu" />
-			<span> Przysuska Liga Pokemon </span>
-		</a>
+{#if user}
+	<div class="header">
+		<div class="left">
+			<a href="/">
+				<img src="/logo.png" alt="Pikachu na niedźwiedziu" />
+				<span> Przysuska Liga Pokemon </span>
+			</a>
+		</div>
+		<div class="right">
+			{#if user.role === 'admin'}
+				<a href="/admin">
+					<ShieldCrownIcon size="30px" />
+				</a>
+			{/if}
+			<p>Cześć, {user.name}</p>
+			<button onclick={() => logout()}>Wyloguj</button>
+		</div>
 	</div>
-	<div class="right">
-		<a href="/pokemons">
-			<PokeballIcon size="30px" />
-		</a>
-		<a href="/admin">
-			<ShieldCrownIcon size="30px" />
-		</a>
-	</div>
-</div>
-
+{/if}
 <div class="page-wrapper">
 	<div class="background-wrapper"></div>
 	<div class="content">

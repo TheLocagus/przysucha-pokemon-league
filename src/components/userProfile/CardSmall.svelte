@@ -1,6 +1,8 @@
 <script lang="ts">
 	import type TCGdex from '@tcgdex/sdk';
 	import { getContext } from 'svelte';
+	import { tcgdex } from '../../tcgdex';
+	import { notifications } from '../../routes/utils/utils';
 
 	let {
 		card,
@@ -12,12 +14,17 @@
 		chosenCard: string;
 	} = $props();
 
-	const tcgdex: TCGdex = getContext('tcgdex');
-
 	let imgElem: HTMLImageElement | undefined = $state();
 
 	const getSingleImage = async (cardId: string, q: 'low' | 'high' = 'low') => {
-		const card = await tcgdex.card.get(cardId);
+		if (!$tcgdex) {
+			notifications.set([
+				...$notifications,
+				{ isPositive: false, message: 'Unable to connect with TCGDex.' }
+			]);
+			return;
+		}
+		const card = await $tcgdex.card.get(cardId);
 		return card?.getImageURL(q, 'png');
 	};
 </script>

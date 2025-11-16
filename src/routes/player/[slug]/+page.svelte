@@ -2,10 +2,12 @@
 	import SingleResultInProfile from '../../../components/userProfile/SingleResultInProfile.svelte';
 	import ArrowLeft from 'svelte-material-icons/ArrowLeftBold.svelte';
 	import ArrowRight from 'svelte-material-icons/ArrowRightBold.svelte';
-	import type { PlayerProfileDTO, TournamentDTO } from '$types';
+	import type { PlayerProfileDTO, PlayersDTO, TournamentDTO } from '$types';
 	import AddEditDeckModal from '../../../components/AddEditDeckModal.svelte';
 	import ProfileSegment from '../../../components/userProfile/ProfileSegment.svelte';
 	import DecksDetails from '../../../components/userProfile/DecksDetails.svelte';
+	import { getContext } from 'svelte';
+	import type { Writable } from 'svelte/store';
 
 	let {
 		data
@@ -22,9 +24,9 @@
 	const allTournamentsInfo = $derived(data.tournaments);
 	const tournamentsNumber = $derived(Object.keys(playerData.tournamentsMatches).length);
 	const type = $derived(data.player.player.favouritePokemon.type);
+	let user: PlayersDTO = $derived(getContext('userContext'));
 
 	const getAge = (year: number) => {
-		console.log(typeof year);
 		return new Date().getFullYear() - year;
 	};
 
@@ -46,9 +48,11 @@
 				<p>Ulubiony pokemon: {playerData.player.favouritePokemon.name}</p>
 			</div>
 		</div>
-		<!-- <div class="actions">
-			<button onclick={() => (open = true)}>Dodaj talię</button>
-		</div> -->
+		{#if playerData?.player?._id === user?._id || user?.role === 'admin'}
+			<div class="actions">
+				<button onclick={() => (open = true)}>Dodaj talię</button>
+			</div>
+		{/if}
 	</div>
 	<div class="segments">
 		<ProfileSegment title="Historia meczów">
@@ -84,7 +88,7 @@
 		</ProfileSegment>
 		<ProfileSegment title="Talie">
 			{#snippet content()}
-				<DecksDetails decks={playerData.player.decks} />
+				<DecksDetails decks={playerData.player.decks} playerId={playerData.player._id} />
 			{/snippet}
 		</ProfileSegment>
 	</div>
@@ -114,9 +118,6 @@
 				color: var(--c4);
 			}
 		}
-	}
-
-	.segments {
 	}
 
 	.player-page {

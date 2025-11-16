@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { DeckDTO } from '$types';
+	import type { DeckDTO, PlayersDTO } from '$types';
 	import type TCGdex from '@tcgdex/sdk';
 	import { getContext } from 'svelte';
 	import PreviousIcon from 'svelte-material-icons/ArrowLeftBoldBox.svelte';
@@ -7,20 +7,31 @@
 	import EditIcon from 'svelte-material-icons/PencilBox.svelte';
 	import DeleteIcon from 'svelte-material-icons/Delete.svelte';
 	import AddEditDeckModal from '../AddEditDeckModal.svelte';
+	import { notifications } from '../../routes/utils/utils';
+	import { tcgdex } from '../../tcgdex';
+	import type { Writable } from 'svelte/store';
 
 	interface $Props {
 		decks: DeckDTO[];
+		playerId: string;
 	}
 
-	let { decks }: $Props = $props();
-	const tcgdex: TCGdex = getContext('tcgdex');
+	let { decks, playerId }: $Props = $props();
 
 	let chosenDeck: DeckDTO | undefined = $state();
 	let chosenCard = $state('');
 	let editModalOpen = $state(false);
+	let user: PlayersDTO = getContext('userContext');
 
 	const getSingleImage = async (cardId: string, q: 'low' | 'high' = 'low') => {
-		const card = await tcgdex.card.get(cardId);
+		if (!$tcgdex) {
+			notifications.set([
+				...$notifications,
+				{ isPositive: false, message: 'Unable to connect with TCGDex.' }
+			]);
+			return;
+		}
+		const card = await $tcgdex.card.get(cardId);
 		return card?.getImageURL(q, 'png');
 	};
 
@@ -121,7 +132,6 @@
 			<div class="cards">
 				{#each Object.entries(chosenDeck.cards) as [cardId, card] (cardId)}
 					<div class="card">
-						<span>{card.count}</span>
 						{#await getSingleImage(cardId) then imageUrl}
 							<!-- svelte-ignore a11y_click_events_have_key_events -->
 							<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
@@ -137,22 +147,25 @@
 									}
 								}}
 							/>
+							<span>{card.count}</span>
 						{/await}
 					</div>
 				{/each}
 			</div>
-			<div class="actions">
-				<span
-					onclick={() => {
-						editModalOpen = true;
-					}}
-				>
-					<EditIcon size={30} />
-				</span>
-				<span>
-					<DeleteIcon size={30} />
-				</span>
-			</div>
+			{#if user?.role === 'admin' || user?._id === playerId}
+				<div class="actions">
+					<span
+						onclick={() => {
+							editModalOpen = true;
+						}}
+					>
+						<EditIcon size={30} />
+					</span>
+					<span>
+						<DeleteIcon size={30} />
+					</span>
+				</div>
+			{/if}
 		</div>
 	{/if}
 </div>
